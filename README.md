@@ -4,7 +4,7 @@ Term 3 Year 10 Assessment Web Application Task
 ## Project Description - FitNet
 Fitnet is a mobile app designed to help users build consistent gym habits by combining intuitive workout tracking with a motivational streak system. Inspired by the popular study app Yeolpumta (YPT), this fitness-focused tracker uses time logging, daily streaks, and personal goal setting to encourage commitment and discipline in training routines.
 
-## Requirements
+### Requirements
 | **Functional** | **Non-Functional** |
 | ----------- | ----------- |
 | *Workout Timer Functionality*: The app shall allow users to start, pause, and stop a workout timer to record the duration of each session. | *Performance*: The app should respond to user inputs within 1 second and load logs and history within 3 seconds on average devices.|
@@ -42,3 +42,8 @@ Allow users to log workouts and use timers even without internet access, syncing
 
 10. *Exercise Library*
 Include an in-app library of exercises with animations or short videos showing proper form for each exercise.
+
+## App Design 1 - Laptop Layout
+![Wireframe Home Dashboard](https://github.com/user-attachments/assets/344f153d-2088-40a7-8999-666416251fbb)
+![Wireframe Log Workout](https://github.com/user-attachments/assets/44773b05-27b0-45ef-a22b-b2fea60974ee)
+![Wireframe Progress](https://github.com/user-attachments/assets/f0317bb5-dd9b-484b-a1e6-a996f1efe2c4)
