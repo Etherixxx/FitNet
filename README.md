@@ -308,3 +308,25 @@ Include an in-app library of exercises with animations or short videos showing p
     3.3. Display "Profile updated successfully".
 
 **END**
+
+### Test Case 1 - Quick Workout Overlay
+| Field | Details |
+| ----------- | ----------- |
+| Test Case ID| TC-FN-001 |
+| Test Case Name | Verify Quick Workout Overlay opens and allows workout selection|
+| Module | Progress Page / Quick Workout |
+| Test Priority | High |
+| Pre-conditions | User is logged into FitNet and on any page except the login page |
+| Test Steps | 1. Navigate to any page except the login page.   2. Click the "+" button in the bottom right corner. 3. Observe if the quick workout overlay appears.    4. Select a preset workout (e.g., "30 minutes of stretching").  5. Click "Add Workout". |
+| Expected Result |Overlay should appear when "+" is clicked, allowing the user to select a preset workout. Upon selection and confirmation, the workout should be added to their session or history.|
+
+### Test Case 2 - Daily Progress Chart Display
+| Field | Details |
+| ----------- | ----------- |
+| Test Case ID | TC-FN-002 |
+| Test Case Name | Verify daily progress chart loads with correct data |
+| Module | Progress Page – Charts |
+| Test Priority| High |
+| Pre-Conditions| Text |
+| Test Steps | 	1. Navigate to the Progress page    2. Wait for the daily progress chart to load.   3. Compare displayed data points with stored workout records.   4. Hover over a data point to check if the tooltip displays date and workout details. |
+| Expected Result | The daily progress chart should display accurate data for the last 7 days, matching the stored workout records. Tooltips should correctly show date and workout details. |
