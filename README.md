@@ -148,10 +148,10 @@ Include an in-app library of exercises with animations or short videos showing p
 
 ### Pseudocode (Login Page)
 **START**
-1. Display Login Page with:\
-    - Email input field\
-    - Password input field\
-    - "Login" button\
+1. Display Login Page with:
+    - Email input field
+    - Password input field
+    - "Login" button
     - Branding/Logo
 2. IF "Login" button clicked:\
     2.1. Retrieve email and password input.
@@ -166,7 +166,7 @@ Include an in-app library of exercises with animations or short videos showing p
         5.1.1. Display "Invalid email or password"\
         5.1.2. RETURN to Step 2.\
     5.2. IF authentication succeeds:\
-        5.2.1. Redirect to Dashboard Page.\
+        5.2.1. Redirect to Dashboard Page.
 
 **END**
 
@@ -195,7 +195,7 @@ Include an in-app library of exercises with animations or short videos showing p
 8. IF "Close Application" clicked:\
     8.1. Prompt "Are you sure you want to close?".\
     8.2. IF confirmed:\
-        8.2.1. Close the browser tab or window\
+        8.2.1. Close the browser tab or window
 
 **END**
 
@@ -210,7 +210,7 @@ Include an in-app library of exercises with animations or short videos showing p
 3. IF "Start Workout" clicked:\
     3.1. Redirect to Log Workout Page.\
     3.2. Auto-start workout timer with chosen duration.\
-    3.3. Pre-fill workout log with selected workout type and duration.\
+    3.3. Pre-fill workout log with selected workout type and duration.
 
 **END**
 
@@ -226,7 +226,7 @@ Include an in-app library of exercises with animations or short videos showing p
 6. Display "Start Workout Timer" button.
 7. IF "Start Workout Timer" clicked:\
     7.1. Redirect to Log Workout Page\
-    7.2. Pass current timestamp as workout start time parameter.\
+    7.2. Pass current timestamp as workout start time parameter.
 
 **END**
 
@@ -235,11 +235,11 @@ Include an in-app library of exercises with animations or short videos showing p
 1. Display active workout timer (started from Dashboard or Quick Workout overlay).\
     1.1. Show controls: "Pause", "Resume", "Stop".
 2. Display exercise logging form:\
-    - Exercise name\
-    - Sets\
-    - Reps\
-    - Weight (optional)\
-    - Notes\
+    - Exercise name
+    - Sets
+    - Reps
+    - Weight (optional)
+    - Notes
     - "Add Exercise" button
 3. IF "Add Exercise" clicked:\
     3.1. Save exercise entry to current workout session log.
@@ -250,19 +250,19 @@ Include an in-app library of exercises with animations or short videos showing p
             4.1.1.2. Redirect to Workout History Page.\
         4.1.2. IF No:\
             4.1.2.1. Discard data.\
-            4.1.2.2. Redirect to Dashboard.\
+            4.1.2.2. Redirect to Dashboard.
 
 **END**
 
 ### Pseudocode (Workout History Page)
 **START**
-1. Display list of past workouts with:\
-    - Date\
-    - Duration\
+1. Display list of past workouts with:
+    - Date
+    - Duration
     - Exercises logged
 2. Allow filtering by date range and workout type.
 3. IF a workout entry clicked:\
-    3.1. Display detailed view with all exercises, sets, and notes.\
+    3.1. Display detailed view with all exercises, sets, and notes.
 
 **END**
 
@@ -294,17 +294,17 @@ Include an in-app library of exercises with animations or short videos showing p
 
 ### Pseudocode (Profile Page)
 **START**
-1. Display user profile info:\
-    - Name\
-    - Email\
-    - Age\
-    - Weight\
-    - Progress Pictures\
+1. Display user profile info:
+    - Name
+    - Email
+    - Age
+    - Weight
+    - Progress Pictures
     - Fitness goals
 2. Allow editing of profile information.
 3. IF "Save Changes" clicked:\
     3.1. Validate updated information.\
     3.2. Save changes to database.\
-    3.3. Display "Profile updated successfully".\
+    3.3. Display "Profile updated successfully".
 
 **END**
