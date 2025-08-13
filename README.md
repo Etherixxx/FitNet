@@ -96,3 +96,215 @@ Include an in-app library of exercises with animations or short videos showing p
 <img width="987" height="1104" alt="image" src="https://github.com/user-attachments/assets/78cf0ae4-6e8e-4921-a7d4-fb822883dfff" />
 
 ### Best Practice Principles
+
+1. **Visual Consistency**
+    - **Navigation & Layout:** Logo, hamburger menu, and section structure are in the same position on every screen.
+
+    - **Cards & Buttons:** Stats and action buttons share the same rounded rectangle style, spacing, and size.
+
+    - **Colours:**
+        - Black Background [000000] to make UI Elements pop out
+
+        - Primary blue [0F52FF] background for main UI elements.
+
+        - White text [FFFFFF] for readability.
+
+        - Greyish-blue [BEBFCB] for text input to add consistency
+
+        - Red (cardio) and green (stretch) 
+        accents for workout types.\
+
+        Overall tone is blue, allowing for consistency and blend throughout the whole design. Maintaining a minimalisitic structure and look.
+
+    - **Fonts:** Bold Roboto for headings, lighter Roboto for body text. Consistent and minimalistic.
+
+2. **Functional Consitency**
+    - Menu works the same on all screens. 
+
+    - Workout logging always follows the same flow: choose type → enter sets/reps/weight → save.
+
+    - Graphs use the same interaction style and labelling.
+
+3. **Internal Consistency**
+- Screen layout order is always: stats → current session/graph → goals.
+
+- Repeated terminology (Workout Type, Current Session, Fitness Goals).
+
+- Inputs and dropdowns have identical styling.
+
+4. **External Consistency**
+- **Familiar fitness app patterns:** stat cards, graphs, and floating “+” button. Easy for users of apps like Fitbit or Strava to understand.
+
+5. **Aesthetic Consistency**
+- Blue as the primary colour, with accents only for workout categories.
+
+- Same font sizes and weights for headings, labels, and body text.
+
+- Matching icon style across all screens.
+
+
+
+## Algorithm Design
+
+### Pseudocode (Login Page)
+**START**
+1. Display Login Page with:\
+    - Email input field\
+    - Password input field\
+    - "Login" button\
+    - Branding/Logo
+2. IF "Login" button clicked:\
+    2.1. Retrieve email and password input.
+3. IF Email or Password is empty:\
+    3.1. Display "Please fill in all fields"\
+    3.2. RETURN to Step 2.
+4. IF Email format is invalid:\
+    4.1. Display "Invalid email address"\
+    4.2. RETURN to Step 2.
+5. Authenticate user credentials with database.\
+    5.1. IF authentication fails:\
+        5.1.1. Display "Invalid email or password"\
+        5.1.2. RETURN to Step 2.\
+    5.2. IF authentication succeeds:\
+        5.2.1. Redirect to Dashboard Page.\
+
+**END**
+
+### Pseudocode (Global Components - Hamburger Menu)
+**START**
+1. Display hamburger icon in top right corner.
+2. IF hamburger icon clicked:\
+    2.1. Display dropdown menu with options:\
+        - "Dashboard"\
+        - "Log Workout"\
+        - "Workout History"\
+        - "Profile"\
+        - "Sign Out"\
+        - "Close Application"
+3. IF "Dashboard" clicked:\
+    3.1. Redirect to Dashboard Page.
+4. IF "Log Workout" clicked:\
+    4.1. Redirect to Log Workout Page.
+5. IF "Workout History" clicked:\
+    5.1. Redirect to Workout History Page.
+6. IF "Profile" clicked:\
+    6.1. Redirect to Profile Page.
+7. IF "Sign Out" clicked:\
+    7.1. Clear session/authentication token.\
+    7.2. Redirect to Login Page.
+8. IF "Close Application" clicked:\
+    8.1. Prompt "Are you sure you want to close?".\
+    8.2. IF confirmed:\
+        8.2.1. Close the browser tab or window\
+
+**END**
+
+### Pseudocode (Global Components - Quick Workout Overlay)
+**START**
+1. Display floating "+" button in bottom right corner.
+2. IF "+" button clicked:\
+    2.1. Display overlay modal with quick workout settings:\
+        - Workout type dropdown (e.g., Stretching, Cardio, Strength)\
+        - Duration selector (e.g., 10, 20, 30 minutes)\
+        - "Start Workout" button
+3. IF "Start Workout" clicked:\
+    3.1. Redirect to Log Workout Page.\
+    3.2. Auto-start workout timer with chosen duration.\
+    3.3. Pre-fill workout log with selected workout type and duration.\
+
+**END**
+
+### Pseudocode (Home Dashboard)
+**START**
+1. Verify if session token exists.
+2. IF no token:\
+    2.1. Redirect to Login Page.
+3. Retrieve user's name, streak count, and latest workout summary from database.
+4. Display welcome message with name.
+5. Display streak counter.
+6. Display total time worked out.
+6. Display "Start Workout Timer" button.
+7. IF "Start Workout Timer" clicked:\
+    7.1. Redirect to Log Workout Page\
+    7.2. Pass current timestamp as workout start time parameter.\
+
+**END**
+
+### Pseudocode (Logging Workout Page)
+**START**
+1. Display active workout timer (started from Dashboard or Quick Workout overlay).\
+    1.1. Show controls: "Pause", "Resume", "Stop".
+2. Display exercise logging form:\
+    - Exercise name\
+    - Sets\
+    - Reps\
+    - Weight (optional)\
+    - Notes\
+    - "Add Exercise" button
+3. IF "Add Exercise" clicked:\
+    3.1. Save exercise entry to current workout session log.
+4. IF "Stop Timer" clicked:\
+    4.1. Prompt "Save workout?"\
+        4.1.1. IF Yes:\
+            4.1.1.1. Save workout data to user account.\
+            4.1.1.2. Redirect to Workout History Page.\
+        4.1.2. IF No:\
+            4.1.2.1. Discard data.\
+            4.1.2.2. Redirect to Dashboard.\
+
+**END**
+
+### Pseudocode (Workout History Page)
+**START**
+1. Display list of past workouts with:\
+    - Date\
+    - Duration\
+    - Exercises logged
+2. Allow filtering by date range and workout type.
+3. IF a workout entry clicked:\
+    3.1. Display detailed view with all exercises, sets, and notes.\
+
+**END**
+
+### Pseudocode (Progress Page)
+**START**
+1. Verify if session token exists.
+2. IF no token:\
+    2.1. Redirect to Login Page.
+3. Display page header: "Your Progress" and "Track your fitness journey over time".
+4. Display timeframe filter dropdown (e.g., "This Month").
+5. Show summary cards with:\
+    5.1. Total Workouts (e.g., 47)\
+    5.2. Total Time (e.g., 32.5h)\
+    5.3. Average Workout Duration (e.g., 42 min)\
+    5.4. Personal Best (e.g., 95kg Bench Press)
+6. Display data visualization section with tabs:\
+    7.1. "Workout Frequency" tab:\
+        7.1.1. Show bar chart displaying number of workouts per week/day (like Progress 1).\
+    7.2. "Strength Progress" tab:\
+        7.2.1. Show line chart tracking strength gains over time (like Progress 2).\
+    7.3. "Monthly Overview" tab:\
+        7.3.1. Show combined line/bar chart of workouts and performance metrics (like Progress 3).
+7. Show "Fitness Goals" card displaying:\
+    8.1. Current progress towards weekly workout goal (e.g., 4/5 Workouts).\
+    8.2. Personal best target progress (e.g., Bench Press Goal).
+8. Allow user to switch timeframe filter to update charts and data accordingly
+
+**END**
+
+### Pseudocode (Profile Page)
+**START**
+1. Display user profile info:\
+    - Name\
+    - Email\
+    - Age\
+    - Weight\
+    - Progress Pictures\
+    - Fitness goals
+2. Allow editing of profile information.
+3. IF "Save Changes" clicked:\
+    3.1. Validate updated information.\
+    3.2. Save changes to database.\
+    3.3. Display "Profile updated successfully".\
+
+**END**
