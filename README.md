@@ -327,6 +327,6 @@ Include an in-app library of exercises with animations or short videos showing p
 | Test Case Name | Verify daily progress chart loads with correct data |
 | Module | Progress Page – Charts |
 | Test Priority| High |
-| Pre-Conditions| Text |
+| Pre-Conditions| User is logged in and has existing workout data for the past 7 days |
 | Test Steps | 	1. Navigate to the Progress page    2. Wait for the daily progress chart to load.   3. Compare displayed data points with stored workout records.   4. Hover over a data point to check if the tooltip displays date and workout details. |
 | Expected Result | The daily progress chart should display accurate data for the last 7 days, matching the stored workout records. Tooltips should correctly show date and workout details. |
