@@ -1,0 +1,15 @@
+-- database: ./data_source.db
+
+SELECT  Users.user_id AS User,
+        Users.first_name AS "First Name",
+        Users.surname AS "Last Name",
+        Workouts.workout_id AS WorkoutID,
+        Workouts.start_time AS StartTime,
+        Workouts.duration_min AS Duration,
+        Workouts.calories_burned AS Calories
+FROM Users
+JOIN Workouts ON Users.user_id = Workouts.user_id
+WHERE Users.user_id = 7
+    AND Workouts.start_time >= DATE('now', '-7 days')
+GROUP BY DATE(Workouts.start_time)
+ORDER BY DATE(Workouts.start_time) ASC;
