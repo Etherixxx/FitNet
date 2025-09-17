@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log Workout</title>
+  <link rel="stylesheet" href="static/css/workout-log.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
+      </div>
+      <nav class="navigation">
+        <ul>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/log-workout" class="active">Log Workout</a></li>
+          <li><a href="/progress">Progress</a></li>
+          <li><a href="/profile">Profile</a></li>
+        </ul>
+      </nav>
+      <div class="actions">
+        <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="workout-timer">
+      <h2>Current Workout</h2>
+      <div class="timer">
+        <label for="workout-type">Workout Type</label>
+        <select id="workout-type">
+          <option>Select workout type</option>
+        </select>
+        <span class="time">0:00</span>
+        <button class="start-timer">Start Timer</button>
+      </div>
+    </section>
+
+    <section class="add-exercise">
+      <h2>Add Exercise</h2>
+      <form>
+        <label for="exercise">Exercise</label>
+        <input type="text" id="exercise" placeholder="Select or type exercise">
+
+        <label for="sets">Sets</label>
+        <input type="number" id="sets" value="3">
+
+        <label for="reps">Reps</label>
+        <input type="number" id="reps" value="12">
+
+        <label for="weight">Weight (kg)</label>
+        <input type="number" id="weight" value="61">
+
+        <label for="notes">Notes</label>
+        <textarea id="notes" placeholder="Any additional notes about this exercise..."></textarea>
+
+        <button type="button" class="add-exercise-btn">+ Add Exercise</button>
+      </form>
+    </section>
+
+    <section class="session-log">
+      <h2>Current Session</h2>
+      <p>0 exercises logged</p>
+      <p>No exercises logged yet. Add your first exercise above!</p>
+    </section>
+  </main>
+</body>
+</html>

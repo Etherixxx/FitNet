@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progress</title>
+  <link rel="stylesheet" href="static/css/progress.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
+      </div>
+      <nav class="navigation">
+        <ul>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/log-workout">Log Workout</a></li>
+          <li><a href="/progress" class="active">Progress</a></li>
+          <li><a href="/profile">Profile</a></li>
+        </ul>
+      </nav>
+      <div class="actions">
+        <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="progress-tracking">
+      <h2>Your Progress</h2>
+      <p>Track your fitness journey over time</p>
+
+      <!-- Progress Stats Cards -->
+      <div class="stats-cards">
+        <div class="card">
+          <div class="card-header">
+            <span>Total Workouts</span>
+            <span class="icon trending-up">📈</span>
+          </div>
+          <div class="card-content">
+            <div class="value">47</div>
+            <p>+12% from last month</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>Total Time</span>
+            <span class="icon clock">⏰</span>
+          </div>
+          <div class="card-content">
+            <div class="value">32.5h</div>
+            <p>This month</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>Avg. Workout</span>
+            <span class="icon clock">⏰</span>
+          </div>
+          <div class="card-content">
+            <div class="value">42 min</div>
+            <p>Per session</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <span>Personal Best</span>
+            <span class="icon weight">🏋️</span>
+          </div>
+          <div class="card-content">
+            <div class="value">95 kg</div>
+            <p>Bench Press</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="charts">
+        <h3>Weekly Workout Duration</h3>
+        <p>Time spent working out this week</p>
+        <div class="chart">[Chart Placeholder]</div>
+
+        <h3>Strength Progression</h3>
+        <p>Weight progression over time</p>
+        <div class="chart">[Chart Placeholder]</div>
+
+        <h3>Monthly Overview</h3>
+        <p>Your workout consistency throughout the year</p>
+        <div class="chart">[Chart Placeholder]</div>
+      </div>
+
+      <!-- Goals Section -->
+      <div class="goals">
+        <h3>Fitness Goals</h3>
+        <p>Track your progress towards your goals</p>
+        <div class="goal">
+          <span>Weekly Workout Goal</span>
+          <span>4/5 workouts</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 80%;"></div>
+          </div>
+        </div>
+        <div class="goal">
+          <span>Bench Press Goal (100 kg)</span>
+          <span>95/100 kg</span>
+          <div class="progress-bar">
+            <div class="progress" style="width: 95%;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

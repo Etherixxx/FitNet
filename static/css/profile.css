@@ -1,0 +1,135 @@
+/* General Styles */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header Styles */
+.header {
+  background: #000000;
+  border-bottom: 1px solid #333333;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+}
+
+.header .logo img {
+  height: 40px;
+}
+
+.header .navigation ul {
+  list-style: none;
+  display: flex;
+  gap: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.header .navigation ul li a {
+  text-decoration: none;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.header .navigation ul li a:hover,
+.header .navigation ul li a.active {
+  background-color: #050A44;
+  color: white;
+}
+
+.header .actions .logout {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.header .actions .logout:hover {
+  background-color: #c82333;
+}
+
+/* Profile Page Styles */
+.profile-settings .personal-info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.profile-settings .card {
+  background: #03169A;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.profile-settings .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile-settings .card-content {
+  text-align: center;
+}
+
+.profile-settings .profile-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.profile-settings .upload-photo,
+.profile-settings .save-profile,
+.profile-settings .save-goals,
+.profile-settings .save-settings {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.profile-settings .upload-photo:hover,
+.profile-settings .save-profile:hover,
+.profile-settings .save-goals:hover,
+.profile-settings .save-settings:hover {
+  background-color: #0056b3;
+}
+
+.profile-settings textarea,
+.profile-settings input {
+  background: #3745A5;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+}

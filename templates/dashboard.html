@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitNet Dashboard</title>
+  <link rel="stylesheet" href="static/css/dashboard.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
+      </div>
+      <nav class="navigation">
+        <ul>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/log-workout">Log Workout</a></li>
+          <li><a href="/progress">Progress</a></li>
+          <li><a href="/profile">Profile</a></li>
+        </ul>
+      </nav>
+      <div class="actions">
+        <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+      <h2>Welcome back, Ethan! 👋</h2>
+      <p>Ready to crush your fitness goals today?</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-cards">
+      <div class="card">
+        <div class="card-header">
+          <span>Daily Streak</span>
+          <span class="icon flame">🔥</span>
+        </div>
+        <div class="card-content">
+          <div class="value">2 days</div>
+          <p>Keep it up! 🔥</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>This Week</span>
+          <span class="icon target">🎯</span>
+        </div>
+        <div class="card-content">
+          <div class="value">4/5 workouts</div>
+          <div class="progress-bar">
+            <div class="progress" style="width: 60%;"></div>
+          </div>
+          <p>1 more to reach your goal</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span>Total Time</span>
+          <span class="icon clock">⏰</span>
+        </div>
+        <div class="card-content">
+          <div class="value">6.5 hours</div>
+          <p>This week</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <button class="start-workout" onclick="window.location.href='log-workout'">Start Workout Timer</button>
+      <button class="schedule-workout">Schedule Workout</button>
+    </div>
+
+    <!-- Recent Workouts -->
+    <div class="recent-workouts">
+      <h3>Recent Workouts</h3>
+      <p>Your latest training sessions</p>
+      <div class="workout-list">
+        <div class="workout">
+          <span class="badge strength">Strength</span>
+          <div class="details">
+            <p>2025-07-28</p>
+            <p>45 min</p>
+            <p>8 exercises</p>
+          </div>
+        </div>
+        <div class="workout">
+          <span class="badge cardio">Cardio</span>
+          <div class="details">
+            <p>2025-07-26</p>
+            <p>30 min</p>
+            <p>1 exercise</p>
+          </div>
+        </div>
+        <div class="workout">
+          <span class="badge stretch">Stretch</span>
+          <div class="details">
+            <p>2025-07-25</p>
+            <p>15 min</p>
+            <p>6 exercises</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
