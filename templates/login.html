@@ -1,180 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - FitNet</title>
-  <style>
-    body {
-      font-family: Roboto, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #000000;
-      color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .container {
-      max-width: 400px;
-      width: 100%;
-      background: #03169A;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .logo {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .logo img {
-      height: 50px;
-    }
-
-    h1 {
-      text-align: center;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    p {
-      text-align: center;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .tabs {
-      display: flex;
-      justify-content: space-around;
-      margin-bottom: 20px;
-    }
-
-    .tabs button {
-      background: #050A44;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .tabs button.active {
-      background: #007bff;
-    }
-
-    form {
-      display: none;
-    }
-
-    form.active {
-      display: block;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 5px;
-      background: #3745A5;
-      color: white;
-    }
-
-    .form-group input::placeholder {
-      color: #cccccc;
-    }
-
-    .form-group button {
-      width: 100%;
-      padding: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .form-group button:disabled {
-      background: #6c757d;
-    }
-
-    .demo-info {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      color: #cccccc;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FitNet</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/auth.css">
 </head>
 <body>
-  <div class="container">
-    <div class="logo">
-      <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
+    <div class="auth-container">
+        <div class="auth-card">
+            <img src="static/images/FitNet Logo.png" alt="FitNet Logo" class="auth-logo">
+            <h2>Welcome Back</h2>
+            
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+            
+            <form method="POST" action="/">
+                <input type="hidden" name="form_type" value="login">
+                
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                </div>
+                
+                <button type="submit" class="auth-btn">Log In</button>
+            </form>
+            
+            <p class="auth-switch">
+                Don't have an account? <a href="/signup">Sign Up</a>
+            </p>
+        </div>
     </div>
-    <h1>Welcome to FitNet</h1>
-    <p>Track your fitness journey</p>
-
-    <div class="tabs">
-      <button class="active" onclick="showForm('login')">Sign In</button>
-      <button onclick="showForm('signup')">Sign Up</button>
-    </div>
-
-    <form id="login" class="active" method="POST" action="/">
-      <div class="form-group">
-        <label for="login-email">Email</label>
-        <input type="email" id="login-email" name="email" placeholder="your@email.com" required>
-      </div>
-      <div class="form-group">
-        <label for="login-password">Password</label>
-        <input type="password" id="login-password" name="password" placeholder="Enter your password" required>
-      </div>
-      <div class="form-group">
-        <button type="submit">Sign In</button>
-      </div>
-    </form>
-
-    <form id="signup">
-      <div class="form-group">
-        <label for="signup-email">Email</label>
-        <input type="email" id="signup-email" placeholder="your@email.com" required>
-      </div>
-      <div class="form-group">
-        <label for="signup-password">Password</label>
-        <input type="password" id="signup-password" placeholder="Create a password" required>
-      </div>
-      <div class="form-group">
-        <label for="confirm-password">Confirm Password</label>
-        <input type="password" id="confirm-password" placeholder="Confirm your password" required>
-      </div>
-      <div class="form-group">
-        <button type="submit">Create Account</button>
-      </div>
-    </form>
-
-    <div class="demo-info">
-      <p>Demo Account: Use any email and password to access the demo</p>
-    </div>
-  </div>
-
-  <script>
-    function showForm(formId) {
-      document.querySelectorAll('form').forEach(form => form.classList.remove('active'));
-      document.getElementById(formId).classList.add('active');
-      document.querySelectorAll('.tabs button').forEach(button => button.classList.remove('active'));
-      document.querySelector(`.tabs button[onclick="showForm('${formId}')"]`).classList.add('active');
-    }
-  </script>
 </body>
 </html>

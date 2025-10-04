@@ -1,71 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Log Workout</title>
-  <link rel="stylesheet" href="static/css/workout-log.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Workout - FitNet</title>
+    <link rel="stylesheet" href="static/css/dashboard.css">
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
-      </div>
-      <nav class="navigation">
-        <ul>
-          <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="/log-workout" class="active">Log Workout</a></li>
-          <li><a href="/progress">Progress</a></li>
-          <li><a href="/profile">Profile</a></li>
-        </ul>
-      </nav>
-      <div class="actions">
-        <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
-      </div>
-    </div>
-  </header>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
+                <span>FitNet</span>
+                <small>Fitness Tracker</small>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/log-workout" class="active">Log Workout</a></li>
+                    <li><a href="/progress">Progress</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                </ul>
+            </nav>
+            <div class="actions">
+                <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
+            </div>
+        </div>
+    </header>
 
-  <main class="container">
-    <section class="workout-timer">
-      <h2>Current Workout</h2>
-      <div class="timer">
-        <label for="workout-type">Workout Type</label>
-        <select id="workout-type">
-          <option>Select workout type</option>
-        </select>
-        <span class="time">0:00</span>
-        <button class="start-timer">Start Timer</button>
-      </div>
-    </section>
+    <main class="container">
+        <!-- Current Workout Timer -->
+        <div class="workout-timer card">
+            <h2>Current Workout</h2>
+            <div class="timer-display">
+                <span id="timer">0:00</span>
+            </div>
+            <div class="workout-type-selector">
+                <label for="workoutType">Workout Type</label>
+                <select id="workoutType" name="workoutType">
+                    <option value="">Select workout type</option>
+                    <option value="strength">Strength Training</option>
+                    <option value="cardio">Cardio</option>
+                    <option value="stretching">Stretching</option>
+                    <option value="sports">Sports</option>
+                </select>
+            </div>
+            <button id="startTimer" class="start-workout">Start Timer</button>
+            <button id="stopTimer" class="schedule-workout" style="display: none;">Stop Timer</button>
+        </div>
 
-    <section class="add-exercise">
-      <h2>Add Exercise</h2>
-      <form>
-        <label for="exercise">Exercise</label>
-        <input type="text" id="exercise" placeholder="Select or type exercise">
+        <!-- Add Exercise Form -->
+        <div class="add-exercise card">
+            <h3>Add Exercise</h3>
+            <p>Log your sets, reps, and weights</p>
+            
+            <div class="exercise-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Exercise</label>
+                        <select id="exerciseName" required>
+                            <option value="">Select an exercise</option>
+                            
+                            <!-- Chest Exercises -->
+                            <optgroup label="Chest">
+                                <option value="Bench Press">Bench Press</option>
+                                <option value="Incline Bench Press">Incline Bench Press</option>
+                                <option value="Decline Bench Press">Decline Bench Press</option>
+                                <option value="Dumbbell Bench Press">Dumbbell Bench Press</option>
+                                <option value="Incline Dumbbell Press">Incline Dumbbell Press</option>
+                                <option value="Chest Flyes">Chest Flyes</option>
+                                <option value="Push-ups">Push-ups</option>
+                                <option value="Dips">Dips</option>
+                                <option value="Cable Chest Press">Cable Chest Press</option>
+                                <option value="Pec Deck">Pec Deck</option>
+                            </optgroup>
+                            
+                            <!-- Back Exercises -->
+                            <optgroup label="Back">
+                                <option value="Pull-ups">Pull-ups</option>
+                                <option value="Chin-ups">Chin-ups</option>
+                                <option value="Lat Pulldown">Lat Pulldown</option>
+                                <option value="Barbell Rows">Barbell Rows</option>
+                                <option value="Dumbbell Rows">Dumbbell Rows</option>
+                                <option value="T-Bar Rows">T-Bar Rows</option>
+                                <option value="Cable Rows">Cable Rows</option>
+                                <option value="Face Pulls">Face Pulls</option>
+                                <option value="Reverse Flyes">Reverse Flyes</option>
+                                <option value="Deadlifts">Deadlifts</option>
+                                <option value="Romanian Deadlifts">Romanian Deadlifts</option>
+                                <option value="Hyperextensions">Hyperextensions</option>
+                            </optgroup>
+                            
+                            <!-- Shoulders -->
+                            <optgroup label="Shoulders">
+                                <option value="Overhead Press">Overhead Press</option>
+                                <option value="Dumbbell Shoulder Press">Dumbbell Shoulder Press</option>
+                                <option value="Arnold Press">Arnold Press</option>
+                                <option value="Lateral Raises">Lateral Raises</option>
+                                <option value="Front Raises">Front Raises</option>
+                                <option value="Rear Delt Flyes">Rear Delt Flyes</option>
+                                <option value="Upright Rows">Upright Rows</option>
+                                <option value="Shrugs">Shrugs</option>
+                                <option value="Pike Push-ups">Pike Push-ups</option>
+                            </optgroup>
+                            
+                            <!-- Arms -->
+                            <optgroup label="Arms">
+                                <option value="Barbell Curls">Barbell Curls</option>
+                                <option value="Dumbbell Curls">Dumbbell Curls</option>
+                                <option value="Hammer Curls">Hammer Curls</option>
+                                <option value="Preacher Curls">Preacher Curls</option>
+                                <option value="Cable Curls">Cable Curls</option>
+                                <option value="Close-Grip Bench Press">Close-Grip Bench Press</option>
+                                <option value="Tricep Dips">Tricep Dips</option>
+                                <option value="Overhead Tricep Extension">Overhead Tricep Extension</option>
+                                <option value="Tricep Pushdowns">Tricep Pushdowns</option>
+                                <option value="Diamond Push-ups">Diamond Push-ups</option>
+                            </optgroup>
+                            
+                            <!-- Legs -->
+                            <optgroup label="Legs">
+                                <option value="Squats">Squats</option>
+                                <option value="Front Squats">Front Squats</option>
+                                <option value="Goblet Squats">Goblet Squats</option>
+                                <option value="Bulgarian Split Squats">Bulgarian Split Squats</option>
+                                <option value="Lunges">Lunges</option>
+                                <option value="Leg Press">Leg Press</option>
+                                <option value="Leg Extensions">Leg Extensions</option>
+                                <option value="Leg Curls">Leg Curls</option>
+                                <option value="Calf Raises">Calf Raises</option>
+                                <option value="Hip Thrusts">Hip Thrusts</option>
+                                <option value="Glute Bridges">Glute Bridges</option>
+                            </optgroup>
+                            
+                            <!-- Core -->
+                            <optgroup label="Core">
+                                <option value="Plank">Plank</option>
+                                <option value="Side Plank">Side Plank</option>
+                                <option value="Crunches">Crunches</option>
+                                <option value="Bicycle Crunches">Bicycle Crunches</option>
+                                <option value="Russian Twists">Russian Twists</option>
+                                <option value="Mountain Climbers">Mountain Climbers</option>
+                                <option value="Leg Raises">Leg Raises</option>
+                                <option value="Dead Bug">Dead Bug</option>
+                                <option value="Bird Dog">Bird Dog</option>
+                                <option value="Ab Wheel Rollouts">Ab Wheel Rollouts</option>
+                            </optgroup>
+                            
+                            <!-- Cardio -->
+                            <optgroup label="Cardio">
+                                <option value="Running">Running</option>
+                                <option value="Treadmill">Treadmill</option>
+                                <option value="Cycling">Cycling</option>
+                                <option value="Elliptical">Elliptical</option>
+                                <option value="Rowing">Rowing</option>
+                                <option value="Stair Climber">Stair Climber</option>
+                                <option value="Jump Rope">Jump Rope</option>
+                                <option value="Burpees">Burpees</option>
+                                <option value="High Knees">High Knees</option>
+                                <option value="Jumping Jacks">Jumping Jacks</option>
+                            </optgroup>
+                            
+                            <!-- Stretching -->
+                            <optgroup label="Stretching">
+                                <option value="Quad Stretch">Quad Stretch</option>
+                                <option value="Hamstring Stretch">Hamstring Stretch</option>
+                                <option value="Calf Stretch">Calf Stretch</option>
+                                <option value="Hip Flexor Stretch">Hip Flexor Stretch</option>
+                                <option value="Shoulder Stretch">Shoulder Stretch</option>
+                                <option value="Chest Stretch">Chest Stretch</option>
+                                <option value="Back Stretch">Back Stretch</option>
+                                <option value="Neck Stretch">Neck Stretch</option>
+                                <option value="Cat-Cow Stretch">Cat-Cow Stretch</option>
+                                <option value="Child's Pose">Child's Pose</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sets</label>
+                        <input type="number" id="sets" value="3" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Reps</label>
+                        <input type="number" id="reps" value="12" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Weight (kg)</label>
+                        <input type="number" id="weight" value="61" min="0" step="0.5">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="notes" placeholder="Any additional notes about this exercise..."></textarea>
+                </div>
+                
+                <button id="addExercise" class="add-exercise-btn">+ Add Exercise</button>
+            </div>
+        </div>
 
-        <label for="sets">Sets</label>
-        <input type="number" id="sets" value="3">
+        <!-- Current Session -->
+        <div class="current-session card">
+            <h3>Current Session</h3>
+            <div id="sessionLog">
+                <p class="empty-state">No exercises logged yet. Add your first exercise above!</p>
+            </div>
+            <button id="saveWorkout" class="save-workout-btn" style="display: none;">Save Workout</button>
+        </div>
+    </main>
 
-        <label for="reps">Reps</label>
-        <input type="number" id="reps" value="12">
-
-        <label for="weight">Weight (kg)</label>
-        <input type="number" id="weight" value="61">
-
-        <label for="notes">Notes</label>
-        <textarea id="notes" placeholder="Any additional notes about this exercise..."></textarea>
-
-        <button type="button" class="add-exercise-btn">+ Add Exercise</button>
-      </form>
-    </section>
-
-    <section class="session-log">
-      <h2>Current Session</h2>
-      <p>0 exercises logged</p>
-      <p>No exercises logged yet. Add your first exercise above!</p>
-    </section>
-  </main>
+    <script src="static/js/log-workout.js"></script>
 </body>
 </html>

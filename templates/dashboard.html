@@ -29,7 +29,7 @@
   <main class="container">
     <!-- Welcome Section -->
     <div class="welcome-section">
-      <h2>Welcome back, Ethan! 👋</h2>
+      <h2>Welcome back, {{ full_name }}! 👋</h2>
       <p>Ready to crush your fitness goals today?</p>
     </div>
 
@@ -41,7 +41,7 @@
           <span class="icon flame">🔥</span>
         </div>
         <div class="card-content">
-          <div class="value">2 days</div>
+          <div class="value">{{ daily_streak }} days</div>
           <p>Keep it up! 🔥</p>
         </div>
       </div>
@@ -52,11 +52,14 @@
           <span class="icon target">🎯</span>
         </div>
         <div class="card-content">
-          <div class="value">4/5 workouts</div>
+          <div class="value">{{ weekly_workouts }} workouts</div>
           <div class="progress-bar">
-            <div class="progress" style="width: 60%;"></div>
+            <div
+              class="progress"
+              style="width: {{ (weekly_workouts / 5) * 100 if weekly_workouts <= 5 else 100 }}%;"
+            ></div>
           </div>
-          <p>1 more to reach your goal</p>
+          <p>{{ 5-weekly_workouts if weekly_workouts < 5 else 0 }} more to reach your goal</p>
         </div>
       </div>
 
@@ -66,7 +69,7 @@
           <span class="icon clock">⏰</span>
         </div>
         <div class="card-content">
-          <div class="value">6.5 hours</div>
+          <div class="value">{{ "%.1f"|format(total_time_hours) }} hours</div>
           <p>This week</p>
         </div>
       </div>
@@ -83,30 +86,16 @@
       <h3>Recent Workouts</h3>
       <p>Your latest training sessions</p>
       <div class="workout-list">
+        {% for workout in recent_workouts %}
         <div class="workout">
-          <span class="badge strength">Strength</span>
+          <span class="badge {{ workout['workout_type']|lower }}">{{ workout['workout_type'] }}</span>
           <div class="details">
-            <p>2025-07-28</p>
-            <p>45 min</p>
-            <p>8 exercises</p>
+            <p>{{ workout['start_time'][:10] }}</p>
+            <p>{{ workout['duration_min'] }} min</p>
+            <!-- You can add more details if needed -->
           </div>
         </div>
-        <div class="workout">
-          <span class="badge cardio">Cardio</span>
-          <div class="details">
-            <p>2025-07-26</p>
-            <p>30 min</p>
-            <p>1 exercise</p>
-          </div>
-        </div>
-        <div class="workout">
-          <span class="badge stretch">Stretch</span>
-          <div class="details">
-            <p>2025-07-25</p>
-            <p>15 min</p>
-            <p>6 exercises</p>
-          </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
   </main>

@@ -1,118 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Progress</title>
-  <link rel="stylesheet" href="static/css/progress.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Progress - FitNet</title>
+    <link rel="stylesheet" href="static/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
-      </div>
-      <nav class="navigation">
-        <ul>
-          <li><a href="/dashboard">Dashboard</a></li>
-          <li><a href="/log-workout">Log Workout</a></li>
-          <li><a href="/progress" class="active">Progress</a></li>
-          <li><a href="/profile">Profile</a></li>
-        </ul>
-      </nav>
-      <div class="actions">
-        <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
-      </div>
-    </div>
-  </header>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="static/images/FitNet Logo.png" alt="FitNet Logo">
+                <span>FitNet</span>
+                <small>Fitness Tracker</small>
+            </div>
+            <nav class="navigation">
+                <ul>
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/log-workout">Log Workout</a></li>
+                    <li><a href="/progress" class="active">Progress</a></li>
+                    <li><a href="/profile">Profile</a></li>
+                </ul>
+            </nav>
+            <div class="actions">
+                <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
+            </div>
+        </div>
+    </header>
 
-  <main class="container">
-    <section class="progress-tracking">
-      <h2>Your Progress</h2>
-      <p>Track your fitness journey over time</p>
-
-      <!-- Progress Stats Cards -->
-      <div class="stats-cards">
-        <div class="card">
-          <div class="card-header">
-            <span>Total Workouts</span>
-            <span class="icon trending-up">📈</span>
-          </div>
-          <div class="card-content">
-            <div class="value">47</div>
-            <p>+12% from last month</p>
-          </div>
+    <main class="container">
+        <div class="progress-header">
+            <h2>Your Progress</h2>
+            <p>Track your fitness journey over time</p>
+            <select class="time-filter">
+                <option value="week">This Week</option>
+                <option value="month" selected>This Month</option>
+                <option value="year">This Year</option>
+            </select>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span>Total Time</span>
-            <span class="icon clock">⏰</span>
-          </div>
-          <div class="card-content">
-            <div class="value">32.5h</div>
-            <p>This month</p>
-          </div>
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="card">
+                <div class="card-header">
+                    <span>Total Workouts</span>
+                    <span class="icon">💪</span>
+                </div>
+                <div class="card-content">
+                    <div class="value">{{ total_workouts }}</div>
+                    <p>All time workouts</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Total Time</span>
+                    <span class="icon">⏰</span>
+                </div>
+                <div class="card-content">
+                    <div class="value">{{ "%.1f"|format(total_time/60) }}h</div>
+                    <p>Total workout time</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Avg. Workout</span>
+                    <span class="icon">⚡</span>
+                </div>
+                <div class="card-content">
+                    <div class="value">{{ "%.0f"|format(avg_duration) }} min</div>
+                    <p>Per session</p>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span>Personal Best</span>
+                    <span class="icon">🏆</span>
+                </div>
+                <div class="card-content">
+                    <div class="value">95 kg</div>
+                    <p>Bench Press</p>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span>Avg. Workout</span>
-            <span class="icon clock">⏰</span>
-          </div>
-          <div class="card-content">
-            <div class="value">42 min</div>
-            <p>Per session</p>
-          </div>
+        <!-- Chart Tabs -->
+        <div class="chart-section">
+            <div class="chart-tabs">
+                <button class="tab-btn active" data-tab="frequency">Workout Frequency</button>
+                <button class="tab-btn" data-tab="strength">Strength Progress</button>
+                <button class="tab-btn" data-tab="monthly">Monthly Overview</button>
+            </div>
+
+            <div class="chart-container">
+                <div id="frequencyChart" class="chart-content active">
+                    <h3>Weekly Workout Duration</h3>
+                    <p>Time spent working out this week</p>
+                    <canvas id="weeklyChart" width="400" height="200"></canvas>
+                </div>
+
+                <div id="strengthChart" class="chart-content">
+                    <h3>Strength Progress</h3>
+                    <p>Track your strength gains over time</p>
+                    <canvas id="strengthProgressChart" width="400" height="200"></canvas>
+                </div>
+
+                <div id="monthlyChart" class="chart-content">
+                    <h3>Monthly Overview</h3>
+                    <p>Combined view of workouts and performance</p>
+                    <canvas id="monthlyOverviewChart" width="400" height="200"></canvas>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">
-            <span>Personal Best</span>
-            <span class="icon weight">🏋️</span>
-          </div>
-          <div class="card-content">
-            <div class="value">95 kg</div>
-            <p>Bench Press</p>
-          </div>
+        <!-- Fitness Goals -->
+        <div class="fitness-goals card">
+            <h3>Fitness Goals</h3>
+            <p>Track your progress towards your goals</p>
+            
+            <div class="goal">
+                <div class="goal-header">
+                    <span>Weekly Workout Goal</span>
+                    <span>4/5 workouts</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 80%;"></div>
+                </div>
+            </div>
+
+            <div class="goal">
+                <div class="goal-header">
+                    <span>Bench Press Goal (100 kg)</span>
+                    <span>95/100 kg</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" style="width: 95%;"></div>
+                </div>
+            </div>
         </div>
-      </div>
+    </main>
 
-      <!-- Charts Section -->
-      <div class="charts">
-        <h3>Weekly Workout Duration</h3>
-        <p>Time spent working out this week</p>
-        <div class="chart">[Chart Placeholder]</div>
-
-        <h3>Strength Progression</h3>
-        <p>Weight progression over time</p>
-        <div class="chart">[Chart Placeholder]</div>
-
-        <h3>Monthly Overview</h3>
-        <p>Your workout consistency throughout the year</p>
-        <div class="chart">[Chart Placeholder]</div>
-      </div>
-
-      <!-- Goals Section -->
-      <div class="goals">
-        <h3>Fitness Goals</h3>
-        <p>Track your progress towards your goals</p>
-        <div class="goal">
-          <span>Weekly Workout Goal</span>
-          <span>4/5 workouts</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 80%;"></div>
-          </div>
-        </div>
-        <div class="goal">
-          <span>Bench Press Goal (100 kg)</span>
-          <span>95/100 kg</span>
-          <div class="progress-bar">
-            <div class="progress" style="width: 95%;"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
+    <script src="static/js/progress.js"></script>
 </body>
 </html>

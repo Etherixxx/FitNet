@@ -24,4 +24,8 @@ WHERE user_id = 1
 GROUP BY workout_date
 ORDER BY workout_date ASC;
 
+-- Add height_cm and weight_kg columns to the Users table
+ALTER TABLE Users ADD COLUMN height_cm REAL;
+ALTER TABLE Users ADD COLUMN weight_kg REAL;
+
 
