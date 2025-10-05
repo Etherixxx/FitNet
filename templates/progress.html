@@ -77,12 +77,12 @@
 
             <div class="card">
                 <div class="card-header">
-                    <span>Personal Best</span>
-                    <span class="icon">🏆</span>
+                    <span>Active Goals</span>
+                    <span class="icon">🎯</span>
                 </div>
                 <div class="card-content">
-                    <div class="value">95 kg</div>
-                    <p>Bench Press</p>
+                    <div class="value">{{ active_goals }}</div>
+                    <p>{{ completed_goals }}/{{ total_goals }} completed</p>
                 </div>
             </div>
         </div>
@@ -92,6 +92,7 @@
             <div class="chart-tabs">
                 <button class="tab-btn active" data-tab="frequency">Workout Frequency</button>
                 <button class="tab-btn" data-tab="strength">Strength Progress</button>
+                <button class="tab-btn" data-tab="goals">Goal Progress</button>
                 <button class="tab-btn" data-tab="monthly">Monthly Overview</button>
             </div>
 
@@ -108,6 +109,12 @@
                     <canvas id="strengthProgressChart" width="400" height="200"></canvas>
                 </div>
 
+                <div id="goalsChart" class="chart-content">
+                    <h3>Goal Progress Overview</h3>
+                    <p>Visual breakdown of your fitness goals</p>
+                    <canvas id="goalsProgressChart" width="400" height="200"></canvas>
+                </div>
+
                 <div id="monthlyChart" class="chart-content">
                     <h3>Monthly Overview</h3>
                     <p>Combined view of workouts and performance</p>
@@ -116,33 +123,91 @@
             </div>
         </div>
 
-        <!-- Fitness Goals -->
-        <div class="fitness-goals card">
-            <h3>Fitness Goals</h3>
-            <p>Track your progress towards your goals</p>
-            
-            <div class="goal">
-                <div class="goal-header">
-                    <span>Weekly Workout Goal</span>
-                    <span>4/5 workouts</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 80%;"></div>
-                </div>
+        <!-- Goals Progress Section -->
+        <div class="goals-progress-section">
+            <div class="section-header">
+                <h3>Your Fitness Goals</h3>
+                <p>Track and update your progress towards your goals</p>
+                <a href="/profile" class="add-goal-link">+ Add New Goal</a>
             </div>
 
-            <div class="goal">
-                <div class="goal-header">
-                    <span>Bench Press Goal (100 kg)</span>
-                    <span>95/100 kg</span>
+            {% if goals %}
+                <div class="goals-grid">
+                    {% for goal in goals %}
+                    <div class="goal-progress-card {% if goal.is_completed %}completed{% endif %}">
+                        <div class="goal-header">
+                            <div class="goal-info">
+                                <h4>{{ goal.goal_name }}</h4>
+                                <span class="goal-type-badge {{ goal.goal_type }}">{{ goal.goal_type.replace('_', ' ').title() }}</span>
+                            </div>
+                            <div class="goal-status">
+                                {% if goal.is_completed %}
+                                    <span class="completed-badge">✅ Completed</span>
+                                {% else %}
+                                    <span class="active-badge">🎯 Active</span>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if goal.target_value %}
+                                        <div class="progress-info">
+                                            <span>{{ goal.current_value }} / {{ goal.target_value }}</span>
+                                            <span>{{ goal | goal_display_text }}</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress" style="width: {{ goal | goal_progress }}%;"></div>
+                                        </div>
+                                    {% endif %}
+
+                        {% if goal.target_date %}
+                            <p class="target-date">🗓️ Target: {{ goal.target_date }}</p>
+                        {% endif %}
+
+                        <!-- Quick Update Form -->
+                        <div class="quick-update-form">
+                            <form method="POST" class="update-form">
+                                <input type="hidden" name="form_type" value="update_goal_progress">
+                                <input type="hidden" name="goal_id" value="{{ goal.goal_id }}">
+                                
+                                <div class="update-row">
+                                    <div class="update-input">
+                                        <label>Update Progress</label>
+                                        <input type="number" name="current_value" step="0.1" 
+                                               value="{{ goal.current_value }}" placeholder="Current value">
+                                    </div>
+                                    <div class="update-checkbox">
+                                        <label>
+                                            <input type="checkbox" name="is_completed" 
+                                                   {% if goal.is_completed %}checked{% endif %}>
+                                            <span class="checkmark"></span>
+                                            Completed
+                                        </label>
+                                    </div>
+                                    <button type="submit" class="update-btn">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div class="progress-bar">
-                    <div class="progress" style="width: 95%;"></div>
+            {% else %}
+                <div class="no-goals-message">
+                    <div class="no-goals-icon">🎯</div>
+                    <h4>No Goals Set Yet</h4>
+                    <p>Set your first fitness goal to start tracking your progress!</p>
+                    <a href="/profile" class="btn-primary">Add Your First Goal</a>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </main>
 
+    <script>
+        // Pass data to JavaScript
+        const goalsData = {{ goals | tojson | safe }};
+        const weeklyData = {{ weekly_data | tojson | safe }};
+        const strengthData = {{ strength_data | tojson | safe }};
+        const monthlyData = {{ monthly_data | tojson | safe }};
+    </script>
     <script src="static/js/progress.js"></script>
 </body>
 </html>

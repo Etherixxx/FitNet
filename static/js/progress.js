@@ -22,11 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeCharts() {
-    // Get data from template (you'll need to pass this from Flask)
-    const weeklyData = {{ weekly_data | tojsonfilter | safe }};
-    const strengthData = {{ strength_data | tojsonfilter | safe }};
-    const monthlyData = {{ monthly_data | tojsonfilter | safe }};
-
     // Weekly Workout Chart with real data
     const weeklyCtx = document.getElementById('weeklyChart').getContext('2d');
     const weeklyLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -97,6 +92,38 @@ function initializeCharts() {
                     x: {
                         grid: { color: 'rgba(255,255,255,0.1)' },
                         ticks: { color: '#F1F2F6' }
+                    }
+                }
+            }
+        });
+    }
+
+    // Goals Progress Chart
+    if (goalsData.length > 0) {
+        const goalsCtx = document.getElementById('goalsProgressChart').getContext('2d');
+        
+        // Create doughnut chart for goal completion
+        const completedGoals = goalsData.filter(g => g.is_completed).length;
+        const activeGoals = goalsData.length - completedGoals;
+
+        new Chart(goalsCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed Goals', 'Active Goals'],
+                datasets: [{
+                    data: [completedGoals, activeGoals],
+                    backgroundColor: ['#10b981', '#758BFD'],
+                    borderColor: ['#059669', '#0D12A4'],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { 
+                        display: true,
+                        labels: { color: '#F1F2F6' },
+                        position: 'bottom'
                     }
                 }
             }
