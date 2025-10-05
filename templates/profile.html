@@ -132,9 +132,19 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
+                                    <label for="goal_direction">Goal Direction</label>
+                                    <select id="goal_direction" name="goal_direction" required>
+                                        <option value="up">Higher is Better (gain weight, lift more, run further)</option>
+                                        <option value="down">Lower is Better (lose weight, faster time, lower %)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
                                     <label for="goal_name">Goal Name</label>
                                     <input type="text" id="goal_name" name="goal_name" 
-                                           placeholder="e.g., Lose 10kg, Bench 100kg" required>
+                                           placeholder="e.g., Lose 10kg, Bench 100kg, Run 5km in 25min" required>
                                 </div>
                             </div>
 
@@ -151,18 +161,9 @@
                                 </div>
                             </div>
 
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="direction">Progress Direction</label>
-                                    <select id="direction" name="direction" required>
-                                        <option value="up">Higher is Better (strength, distance, reps)</option>
-                                        <option value="down">Lower is Better (weight loss, time)</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="target_date">Target Date (Optional)</label>
-                                    <input type="date" id="target_date" name="target_date">
-                                </div>
+                            <div class="form-group">
+                                <label for="target_date">Target Date (Optional)</label>
+                                <input type="date" id="target_date" name="target_date">
                             </div>
 
                             <button type="submit" class="add-goal-btn">Add Goal</button>
