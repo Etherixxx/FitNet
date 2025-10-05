@@ -156,6 +156,17 @@ def profile():
         (user_id,)
     ).fetchone()
 
+    # Get user goals with error handling
+    goals = []
+    try:
+        goals = conn.execute(
+            'SELECT * FROM Goals WHERE user_id = ? ORDER BY created_at DESC',
+            (user_id,)
+        ).fetchall()
+    except sqlite3.Error as e:
+        print(f"Error fetching goals: {e}")
+        goals = []
+
     conn.close()
     return render_template('profile.html', user_data=user_data)
 
