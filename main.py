@@ -1,6 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, request, session, jsonify
 import sqlite3
 import json
+import traceback
 
 
 app = Flask(__name__)
@@ -572,12 +573,13 @@ def populate_goals():
         
         for user in users_data:
             user_id = user['user_id']
-            current_weight = user['weight_kg'] if user['weight_kg'] else random.randint(60, 100)
-            height = user['height_cm'] if user['height_cm'] else random.randint(150, 190)
-            age = user['age'] if user['age'] else random.randint(18, 65)
+            # Convert to float and handle None/empty values properly
+            current_weight = float(user['weight_kg']) if user['weight_kg'] else random.randint(60, 100)
+            height = float(user['height_cm']) if user['height_cm'] else random.randint(150, 190)
+            age = int(user['age']) if user['age'] else random.randint(18, 65)
             
-            # Calculate BMI to determine realistic goals
-            bmi = current_weight / ((height/100) ** 2) if height > 0 else 25
+            # Calculate BMI to determine realistic goals - now both are numbers
+            bmi = current_weight / ((height/100) ** 2) if height and height > 0 else 25
             
             random.seed(user_id)  # Consistent random data per user
             goal_types = ['weight_loss', 'muscle_gain', 'strength', 'endurance', 'custom']
@@ -594,8 +596,8 @@ def populate_goals():
                         target_weight = current_weight - random.randint(2, 6)
                     
                     target_weight = max(50, target_weight)  # Don't go below 50kg
-                    goals_data.append((user_id, goal_type, f'Reach {target_weight:.0f}kg', 
-                                     target_weight, current_weight, '2024-08-01', 0, 'down'))
+                    goals_data.append((user_id, goal_type, f'Reach {target_weight:.1f}kg', 
+                                     round(target_weight, 1), round(current_weight, 1), '2024-08-01', 0, 'down'))
                                      
                 elif goal_type == 'muscle_gain':
                     # Base muscle gain on current weight
@@ -606,8 +608,8 @@ def populate_goals():
                     else:  # Already heavy, small lean gain
                         target_weight = current_weight + random.randint(3, 8)
                     
-                    goals_data.append((user_id, goal_type, f'Bulk to {target_weight:.0f}kg', 
-                                     target_weight, current_weight, '2024-09-01', 0, 'up'))
+                    goals_data.append((user_id, goal_type, f'Bulk to {target_weight:.1f}kg', 
+                                     round(target_weight, 1), round(current_weight, 1), '2024-09-01', 0, 'up'))
                                      
                 elif goal_type == 'strength':
                     exercise = random.choice(['Bench Press', 'Squat', 'Deadlift', 'Overhead Press'])
@@ -630,11 +632,14 @@ def populate_goals():
                         current_strength = current_weight * random.uniform(0.5, 0.8)
                         target_strength = current_weight * random.uniform(0.7, 1.0)
                     
-                    # Ensure target > current
+                    # Ensure target > current and round to 1 decimal place
+                    current_strength = round(current_strength, 1)
+                    target_strength = round(target_strength, 1)
                     if target_strength <= current_strength:
                         target_strength = current_strength + random.randint(5, 15)
+                        target_strength = round(target_strength, 1)
                     
-                    goals_data.append((user_id, goal_type, f'{exercise} {target_strength:.0f}kg', 
+                    goals_data.append((user_id, goal_type, f'{exercise} {target_strength}kg', 
                                      target_strength, current_strength, '2024-10-01', 0, 'up'))
                                      
                 elif goal_type == 'endurance':
@@ -657,14 +662,14 @@ def populate_goals():
                             current_time = base_time + random.randint(10, 30)
                             target_time = base_time + random.randint(0, 15)
                         
-                        goals_data.append((user_id, goal_type, f'Run {distance}km in {target_time:.0f} minutes', 
-                                         target_time, current_time, '2024-07-01', 0, 'down'))
+                        goals_data.append((user_id, goal_type, f'Run {distance}km in {target_time:.1f} minutes', 
+                                         round(target_time, 1), round(current_time, 1), '2024-07-01', 0, 'down'))
                     else:  # Distance-based goals (up direction)
                         current_distance = random.randint(10, 40)
                         target_distance = current_distance + random.randint(10, 30)
                         
                         goals_data.append((user_id, goal_type, f'Cycle {target_distance}km', 
-                                         target_distance, current_distance, '2024-07-01', 0, 'up'))
+                                         round(target_distance, 1), round(current_distance, 1), '2024-07-01', 0, 'up'))
                                          
                 else:  # custom goals
                     custom_options = [
@@ -681,15 +686,15 @@ def populate_goals():
                     goal_name, target, current_func, direction = random.choice(custom_options)
                     current_val = current_func()
                     
-                    # Ensure proper relationship between current and target
+                    # Ensure proper relationship between current and target and round values
                     if direction == 'up' and current_val >= target:
                         current_val = target - random.randint(1, 5)
                     elif direction == 'down' and current_val <= target:
                         current_val = target + random.randint(1, 5)
                     
                     goals_data.append((user_id, goal_type, goal_name, 
-                                     target, current_val, '2024-06-01', 0, direction))
-        
+                                     round(target, 1), round(current_val, 1), '2024-06-01', 0, direction))
+
         # Insert all goals with explicit direction values
         conn.executemany(
             'INSERT INTO Goals (user_id, goal_type, goal_name, target_value, current_value, target_date, is_completed, goal_direction) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',

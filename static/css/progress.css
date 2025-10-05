@@ -119,6 +119,45 @@ body {
   margin-bottom: 20px;
 }
 
+/* Add proper positioning for goal cards */
+.goal-card {
+    position: relative;
+    padding: 20px;
+    border-radius: 12px;
+    color: white;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.goal-card .status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    z-index: 10;
+}
+
+.goal-card .status-badge.active {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.goal-card .status-badge.completed {
+    background: rgba(46, 213, 115, 0.25);
+    color: #2ed573;
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .progress-tracking .progress-bar {
   background: #333333;
   height: 10px;
