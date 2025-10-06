@@ -97,15 +97,44 @@ def dashboard():
     # Convert total time to hours
     total_time_hours = total_time / 60
 
-    # Recent workouts (latest 3)
+    # Recent workouts (latest 20) - Fixed datetime and numeric handling
     recent_workouts_query = '''
-        SELECT workout_type, start_time, duration_min
+        SELECT workout_id, workout_type, start_time, duration_min
         FROM Workouts
         WHERE user_id = ?
         ORDER BY start_time DESC
-        LIMIT 3
+        LIMIT 20
     '''
-    recent_workouts = conn.execute(recent_workouts_query, (session['user_id'],)).fetchall()
+    recent_workouts_raw = conn.execute(recent_workouts_query, (session['user_id'],)).fetchall()
+    
+    # Convert to list of dictionaries and parse datetime strings + ensure numeric types
+    recent_workouts = []
+    for workout in recent_workouts_raw:
+        workout_dict = dict(workout)
+        
+        # Parse the datetime string from SQLite
+        if workout_dict['start_time']:
+            try:
+                from datetime import datetime
+                # SQLite datetime format: "2024-01-15 14:30:00"
+                workout_dict['start_time'] = datetime.strptime(workout_dict['start_time'], '%Y-%m-%d %H:%M:%S')
+            except (ValueError, TypeError):
+                # If parsing fails, set to None so template shows 'Recently'
+                workout_dict['start_time'] = None
+        
+        # Ensure duration_min is an integer for template calculations
+        try:
+            workout_dict['duration_min'] = int(workout_dict['duration_min']) if workout_dict['duration_min'] else 0
+        except (ValueError, TypeError):
+            workout_dict['duration_min'] = 0
+        
+        # Ensure workout_id is an integer
+        try:
+            workout_dict['workout_id'] = int(workout_dict['workout_id']) if workout_dict['workout_id'] else 0
+        except (ValueError, TypeError):
+            workout_dict['workout_id'] = 0
+        
+        recent_workouts.append(workout_dict)
 
     conn.close()
     return render_template(
@@ -736,6 +765,316 @@ def populate_goals():
     finally:
         conn.close()
 
+@app.route('/populate-workouts')
+def populate_workouts():
+    """Route to populate the Workouts and Exercises tables with realistic data"""
+    conn = get_db_connection()
+    try:
+        # Clear existing workout and exercise data
+        conn.execute('DELETE FROM Exercises')
+        conn.execute('DELETE FROM Workouts')
+        
+        # Ensure the Workouts table has proper AUTOINCREMENT for workout_id
+        conn.execute('''
+            CREATE TABLE IF NOT EXISTS Workouts_New (
+                workout_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id INTEGER NOT NULL,
+                workout_type TEXT NOT NULL,
+                start_time DATETIME,
+                end_time DATETIME,
+                duration_min INTEGER,
+                calories_burned INTEGER,
+                FOREIGN KEY (user_id) REFERENCES Users(user_id)
+            )
+        ''')
+        
+        # Check if we need to migrate from old table structure
+        try:
+            conn.execute('INSERT INTO Workouts_New SELECT * FROM Workouts WHERE 1=0')  # Test if structures match
+            conn.execute('DROP TABLE IF EXISTS Workouts_Old')
+            conn.execute('ALTER TABLE Workouts RENAME TO Workouts_Old')
+            conn.execute('ALTER TABLE Workouts_New RENAME TO Workouts')
+        except:
+            # If migration fails, just use the new table
+            conn.execute('DROP TABLE IF EXISTS Workouts')
+            conn.execute('ALTER TABLE Workouts_New RENAME TO Workouts')
+        
+        conn.commit()
+        
+        # Get all users
+        users = conn.execute('SELECT user_id FROM Users WHERE user_id <= 50').fetchall()
+        
+        import random
+        from datetime import datetime, timedelta
+        
+        # Define workout types and their appropriate exercises
+        workout_types = {
+            'strength': {
+                'exercises': [
+                    {'name': 'Bench Press', 'type': 'reps', 'sets_range': (3, 5), 'reps_range': (6, 12), 'weight_range': (40, 120)},
+                    {'name': 'Squat', 'type': 'reps', 'sets_range': (3, 5), 'reps_range': (8, 15), 'weight_range': (50, 150)},
+                    {'name': 'Deadlift', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (5, 8), 'weight_range': (60, 180)},
+                    {'name': 'Overhead Press', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (6, 10), 'weight_range': (25, 80)},
+                    {'name': 'Barbell Row', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (8, 12), 'weight_range': (40, 100)},
+                    {'name': 'Pull-ups', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (3, 12), 'weight_range': (0, 20)},
+                    {'name': 'Dips', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (6, 15), 'weight_range': (0, 25)},
+                    {'name': 'Bicep Curls', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (10, 15), 'weight_range': (10, 40)},
+                    {'name': 'Tricep Extensions', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (10, 15), 'weight_range': (8, 35)},
+                    {'name': 'Leg Press', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (12, 20), 'weight_range': (80, 200)}
+                ],
+                'duration_range': (45, 90),
+                'calories_range': (200, 400)
+            },
+            'cardio': {
+                'exercises': [
+                    {'name': 'Treadmill Running', 'type': 'time', 'sets_range': (1, 1), 'time_range': (15, 45), 'weight_range': (0, 0)},
+                    {'name': 'Cycling', 'type': 'time', 'sets_range': (1, 1), 'time_range': (20, 60), 'weight_range': (0, 0)},
+                    {'name': 'Elliptical', 'type': 'time', 'sets_range': (1, 1), 'time_range': (15, 40), 'weight_range': (0, 0)},
+                    {'name': 'Rowing Machine', 'type': 'time', 'sets_range': (1, 1), 'time_range': (10, 30), 'weight_range': (0, 0)},
+                    {'name': 'Stair Climber', 'type': 'time', 'sets_range': (1, 1), 'time_range': (10, 25), 'weight_range': (0, 0)},
+                    {'name': 'Jump Rope', 'type': 'time', 'sets_range': (3, 5), 'time_range': (2, 5), 'weight_range': (0, 0)},
+                    {'name': 'Burpees', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (8, 20), 'weight_range': (0, 0)},
+                    {'name': 'Mountain Climbers', 'type': 'time', 'sets_range': (3, 4), 'time_range': (0.5, 2), 'weight_range': (0, 0)},
+                    {'name': 'High Knees', 'type': 'time', 'sets_range': (3, 4), 'time_range': (0.5, 2), 'weight_range': (0, 0)}
+                ],
+                'duration_range': (30, 75),
+                'calories_range': (250, 500)
+            },
+            'flexibility': {
+                'exercises': [
+                    {'name': 'Forward Fold', 'type': 'time', 'sets_range': (1, 3), 'time_range': (0.5, 2), 'weight_range': (0, 0)},
+                    {'name': 'Downward Dog', 'type': 'time', 'sets_range': (1, 3), 'time_range': (1, 3), 'weight_range': (0, 0)},
+                    {'name': 'Pigeon Pose', 'type': 'time', 'sets_range': (2, 2), 'time_range': (1, 3), 'weight_range': (0, 0)},
+                    {'name': 'Cat-Cow Stretch', 'type': 'reps', 'sets_range': (1, 2), 'reps_range': (8, 15), 'weight_range': (0, 0)},
+                    {'name': 'Seated Spinal Twist', 'type': 'time', 'sets_range': (2, 2), 'time_range': (0.5, 2), 'weight_range': (0, 0)},
+                    {'name': 'Hamstring Stretch', 'type': 'time', 'sets_range': (2, 2), 'time_range': (1, 2), 'weight_range': (0, 0)},
+                    {'name': 'Shoulder Rolls', 'type': 'reps', 'sets_range': (1, 2), 'reps_range': (10, 20), 'weight_range': (0, 0)},
+                    {'name': 'Hip Circles', 'type': 'reps', 'sets_range': (1, 2), 'reps_range': (8, 15), 'weight_range': (0, 0)}
+                ],
+                'duration_range': (20, 60),
+                'calories_range': (50, 150)
+            },
+            'hiit': {
+                'exercises': [
+                    {'name': 'Burpees', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)},
+                    {'name': 'Jump Squats', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)},
+                    {'name': 'Push-ups', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)},
+                    {'name': 'Mountain Climbers', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)},
+                    {'name': 'High Knees', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)},
+                    {'name': 'Plank Jacks', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)},
+                    {'name': 'Jumping Jacks', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 1), 'weight_range': (0, 0)}
+                ],
+                'duration_range': (20, 45),
+                'calories_range': (200, 400)
+            },
+            'functional': {
+                'exercises': [
+                    {'name': 'Kettlebell Swings', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (15, 25), 'weight_range': (8, 24)},
+                    {'name': 'Turkish Get-ups', 'type': 'reps', 'sets_range': (2, 3), 'reps_range': (3, 8), 'weight_range': (8, 20)},
+                    {'name': 'Farmer\'s Walk', 'type': 'time', 'sets_range': (3, 4), 'time_range': (0.5, 2), 'weight_range': (15, 40)},
+                    {'name': 'Bear Crawl', 'type': 'time', 'sets_range': (3, 4), 'time_range': (0.5, 1.5), 'weight_range': (0, 0)},
+                    {'name': 'Box Jumps', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (8, 15), 'weight_range': (0, 0)},
+                    {'name': 'Battle Ropes', 'type': 'time', 'sets_range': (3, 4), 'time_range': (0.5, 2), 'weight_range': (0, 0)},
+                    {'name': 'Medicine Ball Slams', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (10, 20), 'weight_range': (6, 15)}
+                ],
+                'duration_range': (30, 60),
+                'calories_range': (180, 350)
+            },
+            'core': {
+                'exercises': [
+                    {'name': 'Plank', 'type': 'time', 'sets_range': (3, 4), 'time_range': (0.5, 3), 'weight_range': (0, 0)},
+                    {'name': 'Side Plank', 'type': 'time', 'sets_range': (4, 6), 'time_range': (0.5, 2), 'weight_range': (0, 0)},
+                    {'name': 'Russian Twists', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (20, 40), 'weight_range': (0, 10)},
+                    {'name': 'Dead Bug', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (10, 20), 'weight_range': (0, 0)},
+                    {'name': 'Bicycle Crunches', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (20, 40), 'weight_range': (0, 0)},
+                    {'name': 'Leg Raises', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (10, 20), 'weight_range': (0, 0)},
+                    {'name': 'Bird Dog', 'type': 'reps', 'sets_range': (3, 4), 'reps_range': (8, 15), 'weight_range': (0, 0)}
+                ],
+                'duration_range': (20, 45),
+                'calories_range': (100, 250)
+            }
+        }
+        
+        # Define the date range for September and October 2025
+        sep_start = datetime(2025, 9, 1)
+        oct_end = datetime(2025, 10, 31)
+        total_days = (oct_end - sep_start).days + 1
+        
+        # Generate workouts for each user
+        for user in users:
+            user_id = user['user_id']
+            random.seed(user_id)  # Consistent data per user
+            
+            # Generate 8-20 workouts per user scattered across September-October 2025
+            num_workouts = random.randint(8, 20)
+            
+            # Generate random dates within September-October 2025
+            workout_dates = []
+            for i in range(num_workouts):
+                # Random day within the 61-day period (Sep 1 - Oct 31)
+                days_offset = random.randint(0, total_days - 1)
+                workout_date = sep_start + timedelta(days=days_offset)
+                
+                # Add random hour between 6 AM and 10 PM
+                start_hour = random.randint(6, 22)
+                start_minute = random.randint(0, 59)
+                workout_datetime = workout_date.replace(hour=start_hour, minute=start_minute, second=0, microsecond=0)
+                workout_dates.append(workout_datetime)
+            
+            # Sort workout dates chronologically
+            workout_dates.sort()
+            
+            for workout_datetime in workout_dates:
+                # Choose workout type
+                workout_type = random.choice(list(workout_types.keys()))
+                type_config = workout_types[workout_type]
+                
+                # Generate workout duration and calories
+                duration = random.randint(*type_config['duration_range'])
+                calories = random.randint(*type_config['calories_range'])
+                
+                # Calculate end time
+                end_datetime = workout_datetime + timedelta(minutes=duration)
+                
+                # Insert workout - explicitly exclude workout_id to let AUTOINCREMENT work
+                workout_cursor = conn.execute(
+                    'INSERT INTO Workouts (user_id, workout_type, start_time, end_time, duration_min, calories_burned) VALUES (?, ?, ?, ?, ?, ?)',
+                    (user_id, workout_type, workout_datetime.strftime('%Y-%m-%d %H:%M:%S'), 
+                     end_datetime.strftime('%Y-%m-%d %H:%M:%S'), duration, calories)
+                )
+                
+                # Get the auto-generated workout_id using lastrowid
+                workout_id = workout_cursor.lastrowid
+                
+                if not workout_id:
+                    # Alternative method: use the ROWID
+                    conn.execute('BEGIN IMMEDIATE')
+                    result = conn.execute('SELECT last_insert_rowid()').fetchone()
+                    workout_id = result[0] if result else None
+                    
+                if not workout_id:
+                    # Final fallback: query for the most recent workout for this user
+                    result = conn.execute(
+                        'SELECT workout_id FROM Workouts WHERE user_id = ? ORDER BY ROWID DESC LIMIT 1', 
+                        (user_id,)
+                    ).fetchone()
+                    workout_id = result[0] if result else None
+                
+                print(f"DEBUG: Created workout ID {workout_id} for user {user_id} on {workout_datetime.strftime('%Y-%m-%d %H:%M')}")
+                
+                if workout_id:
+                    # Generate 3-8 exercises for this workout
+                    num_exercises = random.randint(3, 8)
+                    selected_exercises = random.sample(type_config['exercises'], min(num_exercises, len(type_config['exercises'])))
+                    
+                    for exercise_config in selected_exercises:
+                        sets = random.randint(*exercise_config['sets_range'])
+                        
+                        if exercise_config['type'] == 'reps':
+                            reps = random.randint(*exercise_config['reps_range'])
+                        else:  # time-based
+                            # Store time in minutes, convert to reps field for display
+                            time_minutes = random.uniform(*exercise_config['time_range'])
+                            # Convert minutes to seconds for reps field (for display purposes)
+                            reps = int(time_minutes * 60)  # Store as seconds in reps field
+                        
+                        weight = random.uniform(*exercise_config['weight_range']) if exercise_config['weight_range'][1] > 0 else 0
+                        
+                        # Add some variety in notes
+                        notes_options = ['', '', '', 'Great form today!', 'Felt strong', 'Challenging set', 'Good pump', 'Easy weight']
+                        notes = random.choice(notes_options)
+                        
+                        # Insert exercise with proper workout_id
+                        conn.execute(
+                            'INSERT INTO Exercises (workout_id, exercise_name, sets, reps, weight_kg, notes) VALUES (?, ?, ?, ?, ?, ?)',
+                            (workout_id, exercise_config['name'], sets, reps, round(weight, 1) if weight > 0 else 0, notes)
+                        )
+                else:
+                    print(f"ERROR: Failed to get workout_id for user {user_id}")
+        
+        conn.commit()
+        
+        # Get statistics for verification
+        total_workouts = conn.execute('SELECT COUNT(*) FROM Workouts').fetchone()[0]
+        total_exercises = conn.execute('SELECT COUNT(*) FROM Exercises').fetchone()[0]
+        
+        # Verify workout IDs are properly generated
+        workout_id_stats = conn.execute('SELECT MIN(workout_id), MAX(workout_id), COUNT(DISTINCT workout_id) FROM Workouts').fetchone()
+        
+        # Check for NULL workout_ids
+        null_workouts = conn.execute('SELECT COUNT(*) FROM Workouts WHERE workout_id IS NULL').fetchone()[0]
+        
+        # Sample verification with workout_id and end_time from September-October 2025
+        sample_workouts = conn.execute('''
+            SELECT w.workout_id, w.user_id, w.workout_type, w.start_time, w.end_time, w.duration_min, COUNT(e.exercise_id) as exercise_count
+            FROM Workouts w
+            LEFT JOIN Exercises e ON w.workout_id = e.workout_id
+            WHERE w.user_id <= 3 AND w.workout_id IS NOT NULL
+            GROUP BY w.workout_id
+            ORDER BY w.start_time DESC
+            LIMIT 8
+        ''').fetchall()
+        
+        verification_text = "<h3>Sample Workouts (Sep-Oct 2025):</h3>"
+        for workout in sample_workouts:
+            start_time = datetime.strptime(workout['start_time'], '%Y-%m-%d %H:%M:%S').strftime('%m/%d/%Y %I:%M %p')
+            end_time = datetime.strptime(workout['end_time'], '%Y-%m-%d %H:%M:%S').strftime('%I:%M %p')
+            verification_text += f"<p>• ID #{workout['workout_id']} (User {workout['user_id']}): {workout['workout_type'].title()} - {start_time} to {end_time} ({workout['duration_min']} min, {workout['exercise_count']} exercises)</p>"
+        
+        # Sample exercises by type
+        verification_text += "<h3>Sample Exercises by Type:</h3>"
+        for workout_type in list(workout_types.keys())[:3]:  # Show first 3 types
+            sample_exercises = conn.execute('''
+                SELECT e.exercise_name, e.sets, e.reps, e.weight_kg
+                FROM Exercises e
+                JOIN Workouts w ON e.workout_id = w.workout_id
+                WHERE w.workout_type = ? AND w.workout_id IS NOT NULL
+                LIMIT 3
+            ''', (workout_type,)).fetchall()
+            
+            verification_text += f"<p><strong>{workout_type.title()}:</strong></p><ul>"
+            for ex in sample_exercises:
+                # Convert weight_kg to float for comparison
+                try:
+                    weight_kg = float(ex['weight_kg']) if ex['weight_kg'] else 0.0
+                except (ValueError, TypeError):
+                    weight_kg = 0.0
+                
+                if ex['exercise_name'] in ['Treadmill Running', 'Cycling', 'Elliptical', 'Rowing Machine', 'Stair Climber'] or 'plank' in ex['exercise_name'].lower():
+                    # Time-based exercise
+                    try:
+                        reps = int(ex['reps']) if ex['reps'] else 0
+                    except (ValueError, TypeError):
+                        reps = 0
+                    time_display = f"{reps//60}:{reps%60:02d}" if reps >= 60 else f"{reps}s"
+                    verification_text += f"<li>{ex['exercise_name']}: {ex['sets']} sets × {time_display}</li>"
+                else:
+                    # Rep-based exercise
+                    weight_display = f" @ {weight_kg}kg" if weight_kg > 0 else ""
+                    verification_text += f"<li>{ex['exercise_name']}: {ex['sets']} sets × {ex['reps']} reps{weight_display}</li>"
+            verification_text += "</ul>"
+        
+        # Date range verification
+        date_range = conn.execute('SELECT MIN(DATE(start_time)), MAX(DATE(start_time)) FROM Workouts').fetchone()
+        
+        return f"""
+        <h1>Success!</h1>
+        <p>Generated {total_workouts} workouts with {total_exercises} exercises across 7 workout types.</p>
+        <p><strong>Workout IDs:</strong> {workout_id_stats[0]} to {workout_id_stats[1]} ({workout_id_stats[2]} unique IDs)</p>
+        <p><strong>Date Range:</strong> {date_range[0]} to {date_range[1]}</p>
+        <p><strong>NULL workout_ids:</strong> {null_workouts}</p>
+        <p><strong>Workout Types:</strong> Strength, Cardio, Flexibility, HIIT, Functional, Core</p>
+        {verification_text}
+        <p><a href='/dashboard'>View Dashboard</a> | <a href='/progress'>View Progress</a></p>
+        """
+        
+    except Exception as e:
+        conn.rollback()
+        return f"<h1>Error:</h1><p>{str(e)}</p><p>Traceback: {traceback.format_exc()}</p>"
+    
+    finally:
+        conn.close()
+
 # Add a template filter for better goal progress calculation
 @app.template_filter('goal_progress')
 def goal_progress_filter(goal):
@@ -805,6 +1144,60 @@ def goal_display_text_filter(goal):
         else:
             progress = min(100, (current / target) * 100) if target > 0 else 0
             return f"{progress:.1f}% Complete"
+
+@app.route('/workout-details/<int:workout_id>')
+def workout_details(workout_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    conn = get_db_connection()
+    user_id = session['user_id']
+    
+    # Get workout details
+    workout = conn.execute(
+        'SELECT * FROM Workouts WHERE workout_id = ? AND user_id = ?',
+        (workout_id, user_id)
+    ).fetchone()
+    
+    if not workout:
+        conn.close()
+        return redirect(url_for('dashboard'))
+    
+    # Convert workout to dictionary and parse datetime
+    workout_dict = dict(workout)
+    if workout_dict['start_time']:
+        try:
+            from datetime import datetime
+            workout_dict['start_time'] = datetime.strptime(workout_dict['start_time'], '%Y-%m-%d %H:%M:%S')
+        except (ValueError, TypeError):
+            workout_dict['start_time'] = None
+    
+    # Ensure numeric fields are properly typed
+    workout_dict['duration_min'] = int(workout_dict['duration_min']) if workout_dict['duration_min'] else 0
+    workout_dict['calories_burned'] = int(workout_dict['calories_burned']) if workout_dict['calories_burned'] else 0
+    
+    # Get exercises for this workout
+    exercises = []
+    try:
+        exercises_raw = conn.execute(
+            'SELECT * FROM Exercises WHERE workout_id = ? ORDER BY exercise_id',
+            (workout_id,)
+        ).fetchall()
+        exercises = [dict(exercise) for exercise in exercises_raw]
+        
+        # Ensure numeric fields are properly typed for exercises
+        for exercise in exercises:
+            exercise['sets'] = int(exercise['sets']) if exercise['sets'] else 0
+            exercise['reps'] = int(exercise['reps']) if exercise['reps'] else 0
+            exercise['weight_kg'] = float(exercise['weight_kg']) if exercise['weight_kg'] else 0.0
+            
+    except sqlite3.OperationalError:
+        # Exercises table might not exist
+        exercises = []
+    
+    conn.close()
+    
+    return render_template('workout-details.html', workout=workout_dict, exercises=exercises)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

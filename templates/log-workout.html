@@ -210,5 +210,34 @@
     </main>
 
     <script src="static/js/log-workout.js"></script>
+    <script>
+// Add auto-start functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if autostart parameter is present in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const autostart = urlParams.get('autostart');
+    
+    if (autostart === 'true') {
+        // Wait a moment for the page to fully load, then start the timer
+        setTimeout(function() {
+            // Find and click the start timer button if it exists
+            const startButton = document.querySelector('#startTimer, .start-timer-btn, button[onclick*="startTimer"]');
+            if (startButton) {
+                startButton.click();
+            } else {
+                // If no specific start button found, look for any start-related button
+                const buttons = document.querySelectorAll('button');
+                for (let button of buttons) {
+                    if (button.textContent.toLowerCase().includes('start') && 
+                        !button.textContent.toLowerCase().includes('workout')) {
+                        button.click();
+                        break;
+                    }
+                }
+            }
+        }, 500); // 500ms delay to ensure page is ready
+    }
+});
+</script>
 </body>
 </html>

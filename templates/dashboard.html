@@ -81,23 +81,329 @@
       <button class="schedule-workout">Schedule Workout</button>
     </div>
 
-    <!-- Recent Workouts -->
-    <div class="recent-workouts">
-      <h3>Recent Workouts</h3>
-      <p>Your latest training sessions</p>
-      <div class="workout-list">
-        {% for workout in recent_workouts %}
-        <div class="workout">
-          <span class="badge {{ workout['workout_type']|lower }}">{{ workout['workout_type'] }}</span>
-          <div class="details">
-            <p>{{ workout['start_time'][:10] }}</p>
-            <p>{{ workout['duration_min'] }} min</p>
-            <!-- You can add more details if needed -->
-          </div>
+    <!-- Recent Workouts Section - Compact horizontal layout with lighter dark blue cards -->
+    <div class="recent-workouts-section">
+        <div class="section-header">
+            <h3><i class="fas fa-dumbbell"></i> Recent Workouts</h3>
         </div>
-        {% endfor %}
-      </div>
+        
+        <div class="workouts-container">
+            {% if recent_workouts %}
+                {% for workout in recent_workouts %}
+                <div class="workout-card">
+                    <div class="workout-header">
+                        <div class="workout-type">
+                            <i class="fas fa-{% if workout.workout_type == 'cardio' %}heartbeat{% elif workout.workout_type == 'strength' %}dumbbell{% elif workout.workout_type == 'flexibility' %}leaf{% else %}running{% endif %}"></i>
+                            <span class="workout-name">{{ workout.workout_type|title }}</span>
+                        </div>
+                        <div class="workout-date">
+                            {{ workout.start_time.strftime('%b %d') if workout.start_time else 'Recently' }}
+                        </div>
+                    </div>
+                    
+                    <div class="workout-details">
+                        <div class="workout-stat">
+                            <span class="stat-label">Duration</span>
+                            <span class="stat-value">{{ workout.duration_min }} min</span>
+                        </div>
+                    </div>
+                    
+                    <div class="workout-actions">
+                        <button class="btn btn-outline btn-sm" onclick="viewWorkoutDetails({{ workout.workout_id if workout.workout_id else 0 }})">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <h4>No Recent Workouts</h4>
+                    <p>Start your fitness journey by logging your first workout!</p>
+                    <a href="/log-workout?autostart=true" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Start Workout
+                    </a>
+                </div>
+            {% endif %}
+        </div>
     </div>
+
   </main>
+
+  <!-- Add CSS styling -->
+  <style>
+  .recent-workouts-section {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+      margin-bottom: 24px;
+      border: 1px solid #3730a3;
+  }
+
+  .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .section-header h3 {
+      margin: 0;
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 600;
+  }
+
+  .section-header h3 i {
+      margin-right: 8px;
+      color: #93c5fd;
+  }
+
+  .workouts-container {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+  }
+
+  .workout-card {
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 14px;
+      transition: all 0.3s ease;
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+      max-width: 220px;
+      color: white;
+  }
+
+  .workout-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+      border-color: rgba(255, 255, 255, 0.4);
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+  }
+
+  .workout-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 12px;
+  }
+
+  .workout-type {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-weight: 600;
+      color: white;
+      margin-bottom: 6px;
+  }
+
+  .workout-type i {
+      margin-bottom: 6px;
+      color: #dbeafe;
+      font-size: 1.5rem;
+  }
+
+  .workout-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+  }
+
+  .workout-date {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .workout-details {
+      margin-bottom: 12px;
+      text-align: center;
+  }
+
+  .workout-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+  }
+
+  .stat-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.75rem;
+      font-weight: 500;
+  }
+
+  .stat-value {
+      font-weight: 700;
+      color: white;
+      font-size: 1.1rem;
+  }
+
+  .workout-actions {
+      display: flex;
+      justify-content: center;
+  }
+
+  .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+  }
+
+  .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.65rem;
+  }
+
+  .btn-primary {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      color: white;
+      box-shadow: 0 2px 8px rgba(30, 58, 138, 0.3);
+      padding: 8px 16px;
+      font-size: 0.875rem;
+  }
+
+  .btn-primary:hover {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4);
+  }
+
+  .btn-outline {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      color: white;
+  }
+
+  .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 3px 10px rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.5);
+  }
+
+  .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: rgba(255, 255, 255, 0.8);
+      width: 100%;
+  }
+
+  .empty-icon {
+      font-size: 3rem;
+      color: rgba(255, 255, 255, 0.4);
+      margin-bottom: 16px;
+  }
+
+  .empty-state h4 {
+      color: white;
+      margin-bottom: 8px;
+      font-size: 1.2rem;
+      font-weight: 600;
+  }
+
+  .empty-state p {
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+      .workouts-container {
+          flex-direction: column;
+      }
+      
+      .workout-card {
+          max-width: 100%;
+          min-width: 100%;
+      }
+      
+      .workout-header {
+          flex-direction: row;
+          justify-content: space-between;
+          text-align: left;
+      }
+      
+      .workout-type {
+          flex-direction: row;
+          margin-bottom: 0;
+      }
+      
+      .workout-type i {
+          margin-bottom: 0;
+          margin-right: 8px;
+          font-size: 1.1rem;
+      }
+      
+      .workout-details {
+          text-align: left;
+      }
+      
+      .workout-stat {
+          flex-direction: row;
+          justify-content: space-between;
+      }
+      
+      .workout-actions {
+          justify-content: flex-end;
+      }
+  }
+
+  @media (max-width: 600px) {
+      .recent-workouts-section {
+          padding: 16px;
+      }
+      
+      .workout-card {
+          padding: 12px;
+      }
+  }
+  </style>
+
+  <script>
+  // Update any existing "Start Workout" buttons to include autostart parameter
+  document.addEventListener('DOMContentLoaded', function() {
+      const startWorkoutButtons = document.querySelectorAll('a[href="/log-workout"]');
+      startWorkoutButtons.forEach(button => {
+          if (button.textContent.includes('Start Workout') || button.textContent.includes('Start')) {
+              button.href = '/log-workout?autostart=true';
+          }
+      });
+  });
+
+  function viewWorkoutDetails(workoutId) {
+      if (workoutId > 0) {
+          // Redirect to workout details page
+          window.location.href = '/workout-details/' + workoutId;
+      } else {
+          alert('Workout details not available - no workout ID found');
+      }
+  }
+  </script>
 </body>
 </html>
