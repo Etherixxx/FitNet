@@ -21,7 +21,7 @@
         </ul>
       </nav>
       <div class="actions">
-        <button class="logout" onclick="window.location.href='/logout'">Log Out</button>
+        <button class="logout logout-light-red" onclick="window.location.href='/logout'">Log Out</button>
       </div>
     </div>
   </header>
@@ -77,7 +77,7 @@
 
     <!-- Quick Actions -->
     <div class="quick-actions">
-      <button class="start-workout" onclick="window.location.href='log-workout'">Start Workout Timer</button>
+      <button id="start-workout-btn" class="start-workout" onclick="window.location.href='/log-workout?autostart=true'">Start Workout Timer</button>
       <button class="schedule-workout">Schedule Workout</button>
     </div>
 
@@ -388,6 +388,28 @@
   <script>
   // Update any existing "Start Workout" buttons to include autostart parameter
   document.addEventListener('DOMContentLoaded', function() {
+      // Check if there's an active workout
+      const savedState = localStorage.getItem('fitnet_workout_state');
+      if (savedState) {
+          const state = JSON.parse(savedState);
+          if (state.isRunning && state.startTime) {
+              // Calculate elapsed time
+              const now = Date.now();
+              const elapsedSeconds = Math.floor((now - state.startTime) / 1000);
+              const minutes = Math.floor(elapsedSeconds / 60);
+              const seconds = elapsedSeconds % 60;
+              const timeDisplay = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+              
+              // Update the start workout button to show active workout
+              const startBtn = document.getElementById('start-workout-btn');
+              if (startBtn) {
+                  startBtn.textContent = `Continue Workout (${timeDisplay})`;
+                  startBtn.onclick = function() { window.location.href='/log-workout'; };
+                  startBtn.style.background = 'linear-gradient(135deg, #10b981, #34d399)';
+              }
+          }
+      }
+      
       const startWorkoutButtons = document.querySelectorAll('a[href="/log-workout"]');
       startWorkoutButtons.forEach(button => {
           if (button.textContent.includes('Start Workout') || button.textContent.includes('Start')) {

@@ -225,32 +225,36 @@ Include an in-app library of exercises with animations or short videos showing p
 6. Display total time worked out.
 6. Display "Start Workout Timer" button.
 7. IF "Start Workout Timer" clicked:\
-    7.1. Redirect to Log Workout Page\
+    7.1. Redirect to Log Workout Page with autostart=true parameter\
     7.2. Pass current timestamp as workout start time parameter.
 
 **END**
 
 ### Pseudocode (Logging Workout Page)
 **START**
-1. Display active workout timer (started from Dashboard or Quick Workout overlay).\
-    1.1. Show controls: "Pause", "Resume", "Stop".
-2. Display exercise logging form:\
+1. Check URL parameters for autostart=true.\
+    1.1. IF autostart parameter present:\
+        1.1.1. Automatically start workout timer after page loads.\
+        1.1.2. Remove autostart parameter from URL.
+2. Display workout timer with controls: "Start", "Stop".\
+    2.1. Show timer display and workout type selector.
+3. Display exercise logging form:\
     - Exercise name
     - Sets
     - Reps
     - Weight (optional)
     - Notes
     - "Add Exercise" button
-3. IF "Add Exercise" clicked:\
-    3.1. Save exercise entry to current workout session log.
-4. IF "Stop Timer" clicked:\
-    4.1. Prompt "Save workout?"\
-        4.1.1. IF Yes:\
-            4.1.1.1. Save workout data to user account.\
-            4.1.1.2. Redirect to Workout History Page.\
-        4.1.2. IF No:\
-            4.1.2.1. Discard data.\
-            4.1.2.2. Redirect to Dashboard.
+4. IF "Add Exercise" clicked:\
+    4.1. Save exercise entry to current workout session log.
+5. IF "Stop Timer" clicked:\
+    5.1. Prompt "Save workout?"\
+        5.1.1. IF Yes:\
+            5.1.1.1. Save workout data to user account.\
+            5.1.1.2. Redirect to Dashboard Page.\
+        5.1.2. IF No:\
+            5.1.2.1. Discard data.\
+            5.1.2.2. Redirect to Dashboard.
 
 **END**
 

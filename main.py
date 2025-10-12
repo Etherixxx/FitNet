@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, session, jsonify
+from flask import Flask, render_template, redirect, url_for, request, session, jsonify, send_from_directory
 import sqlite3
 import json
 import traceback
@@ -1079,12 +1079,14 @@ def populate_workouts():
 @app.template_filter('goal_progress')
 def goal_progress_filter(goal):
     """Calculate progress percentage based on goal type and direction"""
-    if not goal.get('target_value') or goal.get('target_value') == 0:
+    # Handle both dict and sqlite3.Row objects
+    target_value = goal['target_value'] if 'target_value' in goal else None
+    if not target_value or target_value == 0:
         return 0
     
-    current = goal.get('current_value', 0)
-    target = goal.get('target_value')
-    direction = goal.get('goal_direction', 'up')
+    current = goal['current_value'] if 'current_value' in goal else 0
+    target = target_value
+    direction = goal['goal_direction'] if 'goal_direction' in goal else 'up'
     
     if direction == 'down':
         # For goals where lower is better (weight loss, running time, etc.)
@@ -1110,14 +1112,17 @@ def goal_progress_filter(goal):
 @app.template_filter('goal_display_text')
 def goal_display_text_filter(goal):
     """Generate appropriate display text based on goal type and direction"""
-    if not goal.get('target_value'):
+    # Handle both dict and sqlite3.Row objects
+    target_value = goal['target_value'] if 'target_value' in goal else None
+    if not target_value:
         return "No target set"
     
-    current = goal.get('current_value', 0)
-    target = goal.get('target_value')
-    direction = goal.get('goal_direction', 'up')
-    goal_type = goal.get('goal_type', '')
-    goal_name = goal.get('goal_name', '').lower()
+    current = goal['current_value'] if 'current_value' in goal else 0
+    target = target_value
+    direction = goal['goal_direction'] if 'goal_direction' in goal else 'up'
+    goal_type = goal['goal_type'] if 'goal_type' in goal else ''
+    goal_name = goal['goal_name'] if 'goal_name' in goal else ''
+    goal_name = goal_name.lower()
     
     # Debug: Let's see what we're working with
     print(f"DEBUG: Goal '{goal_name}' - current: {current}, target: {target}, direction: {direction}")
@@ -1198,6 +1203,14 @@ def workout_details(workout_id):
     conn.close()
     
     return render_template('workout-details.html', workout=workout_dict, exercises=exercises)
+
+@app.route('/manifest.json')
+def manifest():
+    return send_from_directory('.', 'manifest.json')
+
+@app.route('/serviceworker.js')
+def serviceworker():
+    return send_from_directory('.', 'serviceworker.js')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

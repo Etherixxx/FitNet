@@ -1,4 +1,9 @@
-{% extends 'layout.html' %} {% block content %}
+{% extends 'layout.html' %}
+
+{% block title %}FitNet - Dashboard{% endblock %}
+
+{% block content %}
+{% include 'partials/menu.html' %}
 <div class="container">
   {% for row in content %}
   <div class="card">
