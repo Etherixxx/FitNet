@@ -1204,6 +1204,100 @@ def workout_details(workout_id):
     
     return render_template('workout-details.html', workout=workout_dict, exercises=exercises)
 
+@app.route('/delete-workout/<int:workout_id>', methods=['DELETE'])
+def delete_workout(workout_id):
+    """Delete a workout and all associated exercises"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'User not logged in. Please log in and try again.'}), 401
+    
+    conn = get_db_connection()
+    user_id = session['user_id']
+    
+    print(f"DEBUG: Delete request - user_id from session: {user_id}, workout_id: {workout_id}")
+    
+    try:
+        # Verify the workout exists and belongs to the current user
+        workout = conn.execute(
+            'SELECT workout_id, user_id FROM Workouts WHERE workout_id = ?', 
+            (workout_id,)
+        ).fetchone()
+        
+        print(f"DEBUG: Found workout: {dict(workout) if workout else 'None'}")
+        
+        if not workout:
+            return jsonify({
+                'success': False, 
+                'message': 'Workout not found. It may have already been deleted.'
+            }), 404
+        
+        # Convert to proper types for comparison
+        workout_user_id = int(workout['user_id'])
+        session_user_id = int(user_id)
+        
+        print(f"DEBUG: Comparing user IDs - workout belongs to: {workout_user_id}, session user: {session_user_id}")
+        
+        # Security check: ensure the workout belongs to the current user
+        if workout_user_id != session_user_id:
+            print(f"DEBUG: Authorization failed - workout user {workout_user_id} != session user {session_user_id}")
+            return jsonify({
+                'success': False, 
+                'message': f'Unauthorized access. Workout belongs to user {workout_user_id} but session is user {session_user_id}.'
+            }), 403
+        
+        # Get exercise count before deletion for confirmation message
+        exercise_count_result = conn.execute(
+            'SELECT COUNT(*) as count FROM Exercises WHERE workout_id = ?', 
+            (workout_id,)
+        ).fetchone()
+        
+        exercise_count = exercise_count_result['count'] if exercise_count_result else 0
+        print(f"DEBUG: Found {exercise_count} exercises for workout {workout_id}")
+        
+        # Delete related exercises first (foreign key constraint)
+        exercises_deleted = conn.execute('DELETE FROM Exercises WHERE workout_id = ?', (workout_id,))
+        print(f"DEBUG: Deleted {exercises_deleted.rowcount} exercises")
+        
+        # Delete the workout
+        workout_deleted = conn.execute('DELETE FROM Workouts WHERE workout_id = ?', (workout_id,))
+        print(f"DEBUG: Deleted {workout_deleted.rowcount} workouts")
+        
+        # Commit the transaction
+        conn.commit()
+        print(f"DEBUG: Transaction committed successfully")
+        
+        # Return success response
+        message = 'Workout deleted successfully!'
+        if exercise_count > 0:
+            message += f' Removed {exercise_count} exercise record{"s" if exercise_count != 1 else ""}.'
+        
+        return jsonify({
+            'success': True, 
+            'message': message
+        })
+        
+    except sqlite3.Error as e:
+        # Rollback in case of database error
+        conn.rollback()
+        print(f"Database error deleting workout {workout_id}: {str(e)}")
+        return jsonify({
+            'success': False, 
+            'message': f'Database error: {str(e)}'
+        }), 500
+        
+    except Exception as e:
+        # Handle any other unexpected errors
+        conn.rollback()
+        print(f"Unexpected error deleting workout {workout_id}: {str(e)}")
+        import traceback
+        print(f"Traceback: {traceback.format_exc()}")
+        return jsonify({
+            'success': False, 
+            'message': f'Unexpected error: {str(e)}'
+        }), 500
+        
+    finally:
+        conn.close()
+
 @app.route('/manifest.json')
 def manifest():
     return send_from_directory('.', 'manifest.json')
