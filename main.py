@@ -418,6 +418,60 @@ def log_workout():
     return render_template('log-workout.html')
 
 
+@app.route('/quick-log-workout', methods=['POST'])
+def quick_log_workout():
+    """Handle quick/manual workout logging"""
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'success': False, 'error': 'User not logged in'}), 401
+
+    try:
+        data = request.json
+        workout_type = data.get('workoutType')
+        duration = data.get('duration', 0)  # Duration in seconds
+        date = data.get('date')
+        time = data.get('time')
+        notes = data.get('notes', '')
+
+        if not workout_type or not date or not time:
+            return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+
+        # Combine date and time into a datetime string
+        start_datetime = f"{date} {time}:00"
+        
+        # Calculate duration in minutes
+        duration_min = max(1, duration // 60)  # Ensure at least 1 minute
+
+        conn = get_db_connection()
+        
+        # Insert workout record
+        workout_cursor = conn.execute(
+            'INSERT INTO Workouts (user_id, workout_type, start_time, duration_min) VALUES (?, ?, ?, ?)',
+            (user_id, workout_type, start_datetime, duration_min)
+        )
+        
+        workout_id = workout_cursor.lastrowid
+        
+        # If notes were provided, add them as a general exercise entry
+        if workout_id and notes.strip():
+            try:
+                conn.execute(
+                    'INSERT INTO Exercises (workout_id, exercise_name, sets, reps, weight_kg, notes) VALUES (?, ?, ?, ?, ?, ?)',
+                    (workout_id, f'Quick Log - {workout_type.title()}', 1, 1, 0, notes)
+                )
+            except sqlite3.OperationalError:
+                # Exercises table might not exist, skip
+                pass
+
+        conn.commit()
+        conn.close()
+        
+        return jsonify({'success': True, 'message': 'Workout logged successfully'}), 200
+
+    except Exception as e:
+        print(f"Error saving quick workout: {str(e)}")
+        return jsonify({'success': False, 'error': 'Failed to save workout'}), 500
+
 @app.route('/progress', methods=['GET', 'POST'])
 def progress():
     if 'user_id' not in session:

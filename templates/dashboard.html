@@ -78,7 +78,7 @@
     <!-- Quick Actions -->
     <div class="quick-actions">
       <button id="start-workout-btn" class="start-workout" onclick="window.location.href='/log-workout?autostart=true'">Start Workout Timer</button>
-      <button class="schedule-workout">Schedule Workout</button>
+      <button id="quick-log-btn" class="schedule-workout" onclick="openQuickLogModal()">Quick Log Workout</button>
     </div>
 
     <!-- Recent Workouts Section - Compact horizontal layout with lighter dark blue cards -->
@@ -131,6 +131,57 @@
     </div>
 
   </main>
+
+  <!-- Quick Log Workout Modal -->
+  <div id="quickLogModal" class="quick-log-modal" style="display: none;">
+    <div class="quick-log-overlay"></div>
+    <div class="quick-log-content">
+      <h3><i class="fas fa-plus-circle"></i> Quick Log Workout</h3>
+      <p>Log a completed workout manually</p>
+      
+      <form id="quickLogForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="quickWorkoutType">Workout Type</label>
+            <select id="quickWorkoutType" required>
+              <option value="">Select workout type</option>
+              <option value="strength">Strength Training</option>
+              <option value="cardio">Cardio</option>
+              <option value="flexibility">Stretching/Flexibility</option>
+              <option value="hiit">HIIT</option>
+              <option value="functional">Functional Training</option>
+              <option value="core">Core Training</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="quickDuration">Duration (minutes)</label>
+            <input type="number" id="quickDuration" min="1" max="300" value="30" required>
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="quickDate">Date</label>
+            <input type="date" id="quickDate" required>
+          </div>
+          <div class="form-group">
+            <label for="quickTime">Time</label>
+            <input type="time" id="quickTime" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="quickNotes">Notes (Optional)</label>
+          <textarea id="quickNotes" placeholder="What did you do? How did it feel?" rows="3"></textarea>
+        </div>
+        
+        <div class="quick-log-buttons">
+          <button type="button" class="cancel-quick-log-btn" onclick="closeQuickLogModal()">Cancel</button>
+          <button type="submit" class="save-quick-log-btn">Save Workout</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Add CSS styling -->
   <style>
@@ -332,6 +383,164 @@
       color: rgba(255, 255, 255, 0.7);
   }
 
+  /* Quick Log Modal Styles */
+  .quick-log-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+  }
+
+  .quick-log-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+  }
+
+  .quick-log-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(145deg, #0D12A4, #1a2bc4);
+    border-radius: 20px;
+    padding: 2rem;
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border: 2px solid rgba(117, 139, 253, 0.4);
+    box-shadow: 0 20px 40px rgba(13, 18, 164, 0.6);
+  }
+
+  .quick-log-content h3 {
+    color: #F1F2F6;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .quick-log-content p {
+    color: #AEB8FE;
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .quick-log-content .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .quick-log-content .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .quick-log-content .form-group:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .quick-log-content label {
+    display: block;
+    color: #F1F2F6;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .quick-log-content input,
+  .quick-log-content select,
+  .quick-log-content textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid rgba(117, 139, 253, 0.3);
+    border-radius: 8px;
+    background: rgba(241, 242, 246, 0.1);
+    color: #F1F2F6;
+    font-family: inherit;
+    transition: all 0.3s ease;
+  }
+
+  .quick-log-content input:focus,
+  .quick-log-content select:focus,
+  .quick-log-content textarea:focus {
+    outline: none;
+    border-color: #758BFD;
+    box-shadow: 0 0 0 3px rgba(117, 139, 253, 0.2);
+    background: rgba(117, 139, 253, 0.1);
+  }
+
+  .quick-log-content select option {
+    background: #0D12A4;
+    color: #F1F2F6;
+  }
+
+  .quick-log-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .cancel-quick-log-btn,
+  .save-quick-log-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .cancel-quick-log-btn {
+    background: rgba(117, 139, 253, 0.2);
+    color: #F1F2F6;
+    border: 2px solid rgba(117, 139, 253, 0.3);
+  }
+
+  .cancel-quick-log-btn:hover {
+    background: rgba(117, 139, 253, 0.3);
+    border-color: rgba(117, 139, 253, 0.5);
+  }
+
+  .save-quick-log-btn {
+    background: linear-gradient(135deg, #10b981, #34d399);
+    color: #F1F2F6;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+  }
+
+  .save-quick-log-btn:hover {
+    background: linear-gradient(135deg, #059669, #10b981);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    .quick-log-content {
+      width: 95%;
+      padding: 1.5rem;
+    }
+    
+    .quick-log-content .form-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .quick-log-buttons {
+      flex-direction: column;
+    }
+  }
+
   /* Responsive design */
   @media (max-width: 768px) {
       .workouts-container {
@@ -426,6 +635,119 @@
           alert('Workout details not available - no workout ID found');
       }
   }
+  
+  function openQuickLogModal() {
+    const modal = document.getElementById('quickLogModal');
+    
+    // Set default date and time to now
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const currentTime = now.toTimeString().slice(0, 5);
+    
+    document.getElementById('quickDate').value = today;
+    document.getElementById('quickTime').value = currentTime;
+    
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeQuickLogModal() {
+    const modal = document.getElementById('quickLogModal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Reset form
+    document.getElementById('quickLogForm').reset();
+  }
+
+  // Handle quick log form submission
+  document.getElementById('quickLogForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const workoutType = document.getElementById('quickWorkoutType').value;
+    const duration = parseInt(document.getElementById('quickDuration').value);
+    const date = document.getElementById('quickDate').value;
+    const time = document.getElementById('quickTime').value;
+    const notes = document.getElementById('quickNotes').value;
+    
+    // Show loading state
+    const saveBtn = document.querySelector('.save-quick-log-btn');
+    const originalText = saveBtn.textContent;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    saveBtn.disabled = true;
+    
+    // Create workout data
+    const workoutData = {
+      workoutType: workoutType,
+      duration: duration * 60, // Convert to seconds
+      date: date,
+      time: time,
+      notes: notes,
+      sessionLog: [] // Empty for quick log
+    };
+    
+    // Submit to server
+    fetch('/quick-log-workout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(workoutData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success || data.message) {
+        // Show success message
+        const successDiv = document.createElement('div');
+        successDiv.style.cssText = `
+          position: fixed;
+          top: 20px;
+          right: 20px;
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          color: white;
+          padding: 16px 24px;
+          border-radius: 10px;
+          box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+          z-index: 2000;
+          font-weight: 600;
+        `;
+        successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Workout logged successfully!';
+        document.body.appendChild(successDiv);
+        
+        setTimeout(() => {
+          successDiv.remove();
+          location.reload(); // Refresh to show updated stats
+        }, 2000);
+        
+        closeQuickLogModal();
+      } else {
+        throw new Error(data.error || 'Failed to log workout');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error logging workout: ' + error.message);
+    })
+    .finally(() => {
+      // Reset button state
+      saveBtn.textContent = originalText;
+      saveBtn.disabled = false;
+    });
+  });
+
+  // Close modal when clicking overlay
+  document.getElementById('quickLogModal').addEventListener('click', function(e) {
+    if (e.target.classList.contains('quick-log-overlay')) {
+      closeQuickLogModal();
+    }
+  });
+
+  // Close modal with Escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeQuickLogModal();
+    }
+  });
   </script>
 </body>
 </html>
