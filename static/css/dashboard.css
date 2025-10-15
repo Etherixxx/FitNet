@@ -1271,21 +1271,208 @@ body:before {
     margin-top: 10px;
 }
 
+/* Add Exercise Button Styling */
+.add-exercise-btn {
+  background: linear-gradient(135deg, #10b981, #34d399) !important;
+  color: #F1F2F6 !important;
+  border: none !important;
+  padding: 1rem 2rem !important;
+  border-radius: 12px !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.4s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  width: 100% !important;
+  margin-top: 1.5rem !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3) !important;
+  border: 2px solid transparent !important;
+}
+
+.add-exercise-btn:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  transform: translate(-50%, -50%);
+}
+
+.add-exercise-btn:hover {
+  background: linear-gradient(135deg, #059669, #10b981) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 15px 35px rgba(16, 185, 129, 0.5) !important;
+  border-color: rgba(52, 211, 153, 0.4) !important;
+}
+
+.add-exercise-btn:hover:before {
+  width: 300px;
+  height: 300px;
+}
+
+.add-exercise-btn:active {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4) !important;
+}
+
+.add-exercise-btn i {
+  margin-right: 8px;
+  font-size: 1.2rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Save Workout Button Styling */
+.save-workout-btn {
+  background: linear-gradient(135deg, #758BFD, #AEB8FE) !important;
+  color: #0C120C !important;
+  border: none !important;
+  padding: 1rem 2rem !important;
+  border-radius: 12px !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: all 0.4s ease !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  width: 100% !important;
+  margin-top: 1rem !important;
+  position: relative !important;
+  overflow: hidden !important;
+  box-shadow: 0 8px 25px rgba(117, 139, 253, 0.3) !important;
+  border: 2px solid transparent !important;
+}
+
+.save-workout-btn:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  transform: translate(-50%, -50%);
+}
+
+.save-workout-btn:hover {
+  background: linear-gradient(135deg, #AEB8FE, #F1F2F6) !important;
+  transform: translateY(-3px) !important;
+  box-shadow: 0 15px 35px rgba(117, 139, 253, 0.5) !important;
+  border-color: rgba(174, 184, 254, 0.4) !important;
+}
+
+.save-workout-btn:hover:before {
+  width: 300px;
+  height: 300px;
+}
+
+.save-workout-btn:active {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 8px 20px rgba(117, 139, 253, 0.4) !important;
+}
+
+/* Form styling for exercise form */
+.exercise-form {
+  padding: 1.5rem;
+  background: rgba(174, 184, 254, 0.05);
+  border-radius: 15px;
+  border: 1px solid rgba(117, 139, 253, 0.2);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: #F1F2F6;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.add-exercise .card h3 {
+  color: #F1F2F6;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.add-exercise .card p {
+  color: #AEB8FE;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* Enhanced current session styling */
+.current-session .card h3 {
+  color: #F1F2F6;
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+  color: #AEB8FE;
+  font-style: italic;
+  opacity: 0.8;
+  border: 2px dashed rgba(117, 139, 253, 0.3);
+  border-radius: 12px;
+  background: rgba(117, 139, 253, 0.05);
+}
+
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
-    .profile-photo {
-        width: 100px;
-        height: 100px;
-    }
-    
-    .upload-form {
-        flex-direction: column;
-    }
-    
-    .upload-btn, .save-photo-btn {
-        width: 100%;
-        max-width: 200px;
-    }
+  .profile-photo {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .upload-form {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .upload-btn, .save-photo-btn {
+    width: 100%;
+    max-width: 200px;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .add-exercise-btn,
+  .save-workout-btn {
+    padding: 0.875rem 1.5rem !important;
+    font-size: 1rem !important;
+  }
 }
 
 /* Responsive Design */
