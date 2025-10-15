@@ -21,6 +21,14 @@
         </ul>
       </nav>
       <div class="actions">
+        <div class="user-profile">
+          <a href="/profile" class="profile-link">
+            <div class="profile-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <span class="username">{{ full_name if full_name and full_name != 'User' else 'Guest' }}</span>
+          </a>
+        </div>
         <button class="logout logout-light-red" onclick="window.location.href='/logout'">Log Out</button>
       </div>
     </div>

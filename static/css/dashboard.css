@@ -1447,31 +1447,121 @@ body:before {
   margin-bottom: 1.5rem;
 }
 
-/* Responsive adjustments */
+/* Header Actions - Update to include profile */
+.header .actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* User Profile Styling */
+.user-profile {
+  position: relative;
+}
+
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #F1F2F6;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  background: rgba(174, 184, 254, 0.1);
+  border: 1px solid rgba(117, 139, 253, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.profile-link:hover {
+  background: rgba(174, 184, 254, 0.2);
+  border-color: rgba(117, 139, 253, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(117, 139, 253, 0.3);
+}
+
+.profile-link.active-profile {
+  background: linear-gradient(135deg, #758BFD, #AEB8FE);
+  color: #0C120C;
+  border-color: transparent;
+}
+
+.profile-link.active-profile:hover {
+  background: linear-gradient(135deg, #AEB8FE, #F1F2F6);
+  color: #0C120C;
+}
+
+.profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #758BFD, #AEB8FE);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0C120C;
+  font-size: 1rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(117, 139, 253, 0.3);
+}
+
+.profile-link:hover .profile-avatar {
+  background: linear-gradient(135deg, #AEB8FE, #F1F2F6);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(117, 139, 253, 0.4);
+}
+
+.profile-link.active-profile .profile-avatar {
+  background: rgba(12, 18, 12, 0.1);
+  color: #0C120C;
+}
+
+.username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
+.profile-link.active-profile .username {
+  color: #0C120C;
+}
+
+/* Responsive adjustments for profile */
 @media (max-width: 768px) {
-  .profile-photo {
-    width: 100px;
-    height: 100px;
-  }
-  
-  .upload-form {
+  .header .actions {
     flex-direction: column;
-    gap: 10px;
-  }
-  
-  .upload-btn, .save-photo-btn {
+    gap: 0.75rem;
     width: 100%;
-    max-width: 200px;
   }
   
-  .form-row {
-    grid-template-columns: 1fr;
+  .profile-link {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
   }
   
-  .add-exercise-btn,
-  .save-workout-btn {
-    padding: 0.875rem 1.5rem !important;
-    font-size: 1rem !important;
+  .username {
+    max-width: none;
+  }
+  
+  .logout {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .username {
+    display: none;
+  }
+  
+  .profile-link {
+    padding: 0.5rem;
   }
 }
 

@@ -435,6 +435,21 @@ def log_workout():
     if not user_id:
         return redirect(url_for('login'))
 
+    # Get user name for header display
+    conn = get_db_connection()
+    user_data = conn.execute(
+        'SELECT first_name, surname FROM Users WHERE user_id = ?',
+        (user_id,)
+    ).fetchone()
+    
+    # Ensure session has proper name
+    if user_data and user_data['first_name'] and user_data['surname']:
+        full_name = f"{user_data['first_name']} {user_data['surname']}"
+        if not session.get('name') or session.get('name') == 'User':
+            session['name'] = full_name
+    
+    conn.close()
+
     if request.method == 'POST':
         try:
             data = request.json
@@ -544,6 +559,18 @@ def progress():
     
     conn = get_db_connection()
     user_id = session['user_id']
+    
+    # Get user name for header display
+    user_data = conn.execute(
+        'SELECT first_name, surname FROM Users WHERE user_id = ?',
+        (user_id,)
+    ).fetchone()
+    
+    # Ensure session has proper name
+    if user_data and user_data['first_name'] and user_data['surname']:
+        full_name = f"{user_data['first_name']} {user_data['surname']}"
+        if not session.get('name') or session.get('name') == 'User':
+            session['name'] = full_name
     
     # Handle goal updates
     if request.method == 'POST':
