@@ -65,7 +65,7 @@ def dashboard():
     
     conn = get_db_connection()
     user_data = conn.execute(
-        'SELECT first_name, surname, email FROM Users WHERE user_id = ?',
+        'SELECT first_name, surname, email, profile_image FROM Users WHERE user_id = ?',
         (session['user_id'],)
     ).fetchone()
 
@@ -156,7 +156,7 @@ def dashboard():
     conn.close()
     return render_template(
         'dashboard.html',
-        user=user_data,
+        user_data=user_data,
         full_name=full_name,
         daily_streak=daily_streak,
         weekly_workouts=weekly_workouts,
@@ -435,10 +435,10 @@ def log_workout():
     if not user_id:
         return redirect(url_for('login'))
 
-    # Get user name for header display
+    # Get user name and profile data for header display
     conn = get_db_connection()
     user_data = conn.execute(
-        'SELECT first_name, surname FROM Users WHERE user_id = ?',
+        'SELECT first_name, surname, profile_image FROM Users WHERE user_id = ?',
         (user_id,)
     ).fetchone()
     
@@ -495,7 +495,7 @@ def log_workout():
             print(f"Error saving workout: {str(e)}")
             return jsonify({'error': 'Failed to save workout'}), 500
 
-    return render_template('log-workout.html')
+    return render_template('log-workout.html', user_data=user_data)
 
 
 @app.route('/quick-log-workout', methods=['POST'])
@@ -560,9 +560,9 @@ def progress():
     conn = get_db_connection()
     user_id = session['user_id']
     
-    # Get user name for header display
+    # Get user name and profile data for header display
     user_data = conn.execute(
-        'SELECT first_name, surname FROM Users WHERE user_id = ?',
+        'SELECT first_name, surname, profile_image FROM Users WHERE user_id = ?',
         (user_id,)
     ).fetchone()
     
@@ -689,6 +689,7 @@ def progress():
     conn.close()
     
     return render_template('progress.html', 
+                         user_data=user_data,
                          progress_data=progress_data,
                          total_workouts=total_workouts,
                          total_time=total_time,

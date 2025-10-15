@@ -1504,31 +1504,14 @@ body:before {
   font-weight: 600;
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(117, 139, 253, 0.3);
-}
-
-.profile-link:hover .profile-avatar {
-  background: linear-gradient(135deg, #AEB8FE, #F1F2F6);
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(117, 139, 253, 0.4);
-}
-
-.profile-link.active-profile .profile-avatar {
-  background: rgba(12, 18, 12, 0.1);
-  color: #0C120C;
-}
-
-.username {
-  font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.3px;
-  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
 }
 
-.profile-link.active-profile .username {
-  color: #0C120C;
+.profile-avatar .avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 /* Responsive adjustments for profile */

@@ -25,7 +25,11 @@
                 <div class="user-profile">
                   <a href="/profile" class="profile-link">
                     <div class="profile-avatar">
-                      <i class="fas fa-user"></i>
+                      {% if user_data and user_data.profile_image %}
+                        <img src="{{ url_for('uploaded_file', filename=user_data.profile_image) }}" alt="Profile" class="avatar-image">
+                      {% else %}
+                        <i class="fas fa-user"></i>
+                      {% endif %}
                     </div>
                     <span class="username">{{ session.get('name', 'Guest') if session.get('name') and session.get('name') != 'User' else 'Guest' }}</span>
                   </a>
