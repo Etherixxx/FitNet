@@ -47,7 +47,6 @@
         <div class="profile-tabs">
             <button class="tab-btn active" data-tab="personal" onclick="showTab('personal')">Personal Info</button>
             <button class="tab-btn" data-tab="goals" onclick="showTab('goals')">Fitness Goals</button>
-            <button class="tab-btn" data-tab="settings" onclick="showTab('settings')">Settings</button>
         </div>
 
         <div class="profile-content">
@@ -313,6 +312,55 @@
             document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
         }
 
+        // Handle URL fragments to navigate directly to specific tabs
+        function handleUrlFragment() {
+            const hash = window.location.hash;
+            if (hash === '#goals-tab') {
+                showTab('goals');
+            } else if (hash === '#settings-tab') {
+                showTab('settings');
+            } else if (hash === '#personal-tab') {
+                showTab('personal');
+            }
+            // Clear the hash from URL after processing
+            if (hash && hash.includes('-tab')) {
+                history.replaceState(null, null, window.location.pathname);
+            }
+        }
+
+        // Check for URL fragment when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            handleUrlFragment();
+            
+            // Handle form submission with progress indication
+            const uploadForms = document.querySelectorAll('form[enctype="multipart/form-data"]');
+            
+            uploadForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const fileInput = form.querySelector('input[type="file"]');
+                    if (fileInput && fileInput.files.length > 0) {
+                        // Show progress indicator
+                        const progressDiv = document.getElementById('uploadProgress');
+                        if (progressDiv) {
+                            progressDiv.style.display = 'block';
+                        }
+                        
+                        // Disable submit button to prevent double submission
+                        const submitBtn = form.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'Uploading...';
+                        }
+                    }
+                });
+            });
+        });
+
+        // Handle browser back/forward navigation
+        window.addEventListener('popstate', function() {
+            handleUrlFragment();
+        });
+
         function toggleEditGoal(goalId) {
             const editForm = document.getElementById(`edit-goal-${goalId}`);
             if (editForm.style.display === 'none') {
@@ -351,31 +399,6 @@
                 reader.readAsDataURL(file);
             }
         }
-
-        // Handle form submission with progress indication
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadForms = document.querySelectorAll('form[enctype="multipart/form-data"]');
-            
-            uploadForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    const fileInput = form.querySelector('input[type="file"]');
-                    if (fileInput && fileInput.files.length > 0) {
-                        // Show progress indicator
-                        const progressDiv = document.getElementById('uploadProgress');
-                        if (progressDiv) {
-                            progressDiv.style.display = 'block';
-                        }
-                        
-                        // Disable submit button to prevent double submission
-                        const submitBtn = form.querySelector('button[type="submit"]');
-                        if (submitBtn) {
-                            submitBtn.disabled = true;
-                            submitBtn.textContent = 'Uploading...';
-                        }
-                    }
-                });
-            });
-        });
     </script>
 </body>
 </html>
