@@ -47,10 +47,34 @@
                         <h3>Profile Photo</h3>
                         <div class="photo-container">
                             <div class="profile-photo">
-                                <img src="static/images/default-avatar.jpg" alt="Profile Photo" id="profileImage">
+                                {% if user_data.profile_image %}
+                                    <img src="{{ url_for('uploaded_file', filename=user_data.profile_image) }}" alt="Profile Photo" id="profileImage">
+                                {% else %}
+                                    <img src="static/images/default-avatar.jpg" alt="Profile Photo" id="profileImage">
+                                {% endif %}
                             </div>
-                            <button class="upload-btn">Upload Photo</button>
+                            
+                            <!-- Photo Upload Form -->
+                            <form method="POST" enctype="multipart/form-data" class="upload-form">
+                                <input type="hidden" name="form_type" value="upload_photo">
+                                <input type="file" id="photoInput" name="profile_photo" accept=".jpg,.jpeg,.png,.gif" style="display: none;" onchange="previewImage(this)">
+                                <button type="button" class="upload-btn" onclick="document.getElementById('photoInput').click()">
+                                    Choose Photo
+                                </button>
+                                <button type="submit" class="save-photo-btn" id="savePhotoBtn" style="display: none;">
+                                    Save Photo
+                                </button>
+                            </form>
+                            
                             <p class="photo-note">JPG, PNG or GIF. Max size 5MB.</p>
+                            
+                            <!-- Upload Progress -->
+                            <div id="uploadProgress" class="upload-progress" style="display: none;">
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                                <p>Uploading...</p>
+                            </div>
                         </div>
                     </div>
 
@@ -285,6 +309,61 @@
                 editForm.style.display = 'none';
             }
         }
+
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File size must be less than 5MB');
+                    input.value = '';
+                    return;
+                }
+                
+                // Validate file type
+                const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, or GIF)');
+                    input.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                    document.getElementById('savePhotoBtn').style.display = 'inline-block';
+                }
+                
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Handle form submission with progress indication
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadForms = document.querySelectorAll('form[enctype="multipart/form-data"]');
+            
+            uploadForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const fileInput = form.querySelector('input[type="file"]');
+                    if (fileInput && fileInput.files.length > 0) {
+                        // Show progress indicator
+                        const progressDiv = document.getElementById('uploadProgress');
+                        if (progressDiv) {
+                            progressDiv.style.display = 'block';
+                        }
+                        
+                        // Disable submit button to prevent double submission
+                        const submitBtn = form.querySelector('button[type="submit"]');
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'Uploading...';
+                        }
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>

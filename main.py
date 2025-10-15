@@ -2,10 +2,27 @@ from flask import Flask, render_template, redirect, url_for, request, session, j
 import sqlite3
 import json
 import traceback
-
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
+
+# Configuration for file uploads
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5MB max file size
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
+
+# Ensure upload directory exists
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 
 # Add tojson filter for Jinja2
 @app.template_filter('tojson')
@@ -175,6 +192,13 @@ def profile():
                 FOREIGN KEY (user_id) REFERENCES Users(user_id)
             )
         ''')
+        
+        # Add profile_image column to Users table if it doesn't exist
+        try:
+            conn.execute('ALTER TABLE Users ADD COLUMN profile_image TEXT')
+        except sqlite3.OperationalError:
+            pass  # Column already exists
+            
         # Add goal_direction column if it doesn't exist
         try:
             conn.execute('ALTER TABLE Goals ADD COLUMN goal_direction TEXT DEFAULT "up"')
@@ -210,6 +234,47 @@ def profile():
             conn.commit()
             # Update the session name
             session['name'] = f"{first_name} {surname}"
+            
+        elif form_type == 'upload_photo':
+            # Handle file upload
+            if 'profile_photo' not in request.files:
+                return redirect(request.url)
+            
+            file = request.files['profile_photo']
+            
+            if file.filename == '':
+                return redirect(request.url)
+            
+            if file and allowed_file(file.filename):
+                # Secure the filename and add user ID prefix
+                filename = secure_filename(file.filename)
+                file_extension = filename.rsplit('.', 1)[1].lower()
+                new_filename = f"user_{user_id}_profile.{file_extension}"
+                
+                # Remove old profile image if it exists
+                old_image = conn.execute(
+                    'SELECT profile_image FROM Users WHERE user_id = ?',
+                    (user_id,)
+                ).fetchone()
+                
+                if old_image and old_image['profile_image']:
+                    old_path = os.path.join(app.config['UPLOAD_FOLDER'], old_image['profile_image'])
+                    if os.path.exists(old_path):
+                        try:
+                            os.remove(old_path)
+                        except OSError:
+                            pass  # File might be in use or already deleted
+                
+                # Save the new file
+                file_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+                file.save(file_path)
+                
+                # Update database with new filename
+                conn.execute(
+                    'UPDATE Users SET profile_image = ? WHERE user_id = ?',
+                    (new_filename, user_id)
+                )
+                conn.commit()
             
         elif form_type == 'add_goal':
             goal_type = request.form.get('goal_type')
@@ -1359,6 +1424,11 @@ def manifest():
 @app.route('/serviceworker.js')
 def serviceworker():
     return send_from_directory('.', 'serviceworker.js')
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    """Serve uploaded files"""
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
