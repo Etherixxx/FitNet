@@ -467,7 +467,7 @@ I focused on creating a polished user interface with consistent styling, respons
 
 **Interactive Features:**
 - **JavaScript Integration**: Client-side functionality for workout timers, form validation, and dynamic content updates
-- **AJAX Implementation**: Asynchronous data submission for workout logging and goal updates without page refreshes
+- **AJAX Implementation**: Asynchronous data submission for workout logging and goal updates without page refresh
 - **User Feedback Systems**: Toast notifications, confirmation dialogs, and progress indicators for user actions
 - **Form Enhancement**: Real-time validation, input formatting, and error display for improved user experience
 
@@ -562,3 +562,98 @@ The FitNet application is now a fully functional fitness tracking web applicatio
 - **Performance Optimization**: Efficient database queries and optimized user interface for responsive performance
 
 The project successfully demonstrates proficiency in web development using Flask, database design with SQLite, user interface design with HTML/CSS, JavaScript integration, and full-stack application development principles. All major features are implemented and tested, providing a robust fitness tracking solution that could serve as a foundation for commercial application development.
+
+## Getting Started - How to Download and Run FitNet
+
+### Prerequisites
+Before running FitNet, ensure you have the following installed on your system:
+
+1. **Python 3.x** - [Download from python.org](https://www.python.org/downloads/)
+2. **Git** - [Download from git-scm.com](https://git-scm.com/downloads/) 
+3. **VSCode** (recommended) - [Download from code.visualstudio.com](https://code.visualstudio.com/download)
+
+> **Note:** On macOS and Linux, you may need to use `pip3` instead of `pip` for package installation.
+
+### Installation Steps
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/YourUsername/FitNet.git
+   cd FitNet
+   ```
+
+2. **Install Required Dependencies**
+   ```bash
+   pip install flask
+   ```
+
+3. **Verify Database Setup**
+   The SQLite database (`database/data_source.db`) is included in the project. No additional database setup is required.
+
+4. **Run the Application**
+   ```bash
+   python main.py
+   ```
+
+5. **Access the Website**
+   - Open your web browser
+   - Navigate to: `http://localhost:5000` or `http://127.0.0.1:5000`
+   - The FitNet login page should appear
+
+### First Time Setup
+
+**Creating Your Account:**
+1. Click "Sign Up" on the login page
+2. Fill in your personal information:
+   - First Name and Last Name
+   - Email address (must be unique)
+   - Password
+   - Age, Height, and Weight
+3. Click "Create Account"
+4. You'll be automatically logged in and redirected to the dashboard
+
+**Alternative - Use Test Account:**
+If sample data has been populated, you can login with existing test accounts:
+Go to data_source.db and use one of the accounts on the Users table to sign in. Each of these accounts come with:
+- 20 different workouts already added with 3 exercises for each workout.
+- 3 set goals.
+- A unique set of data (age, weight, and height)
+
+### Key Features to Try
+
+1. **Dashboard**: View your workout streak, weekly progress, and recent activities
+2. **Log Workout**: Start the timer, add exercises with sets/reps/weight, and save your session
+3. **Progress**: Track your statistics, view charts, and monitor goal progress
+4. **Profile**: Update personal information, upload a profile photo, and manage fitness goals
+
+### Troubleshooting
+
+**Common Issues:**
+- **"Module not found" errors**: Ensure Flask is installed with `pip install flask`
+- **Database errors**: Check that `database/data_source.db` exists in the project directory
+- **Port already in use**: If port 5000 is busy, the app will automatically try port 5001
+- **Profile images not displaying**: Ensure the `static/uploads/` directory exists
+
+**Getting Help:**
+- Check the browser developer console (F12) for JavaScript errors
+- Review the terminal output where you ran `python main.py` for server-side errors
+- Ensure all file paths match the project structure exactly
+
+### Development Mode Features
+
+The application runs in debug mode by default, which provides:
+- Automatic server restart when code changes
+- Detailed error messages in the browser
+- Hot reloading for faster development
+
+To run in production mode, modify `main.py`:
+```python
+app.run(debug=False, host='0.0.0.0', port=5000)
+```
+
+### Progressive Web App Features
+
+FitNet includes PWA capabilities:
+- **Install as App**: Click the install button in your browser's address bar to add FitNet to your desktop or home screen
+- **Offline Access**: Core functionality works without internet connection
+- **Mobile Optimized**: Responsive design works on all device sizes
